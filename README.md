@@ -30,6 +30,7 @@ index.html             Die Anwendung
 favicon.svg            Icon für den Browser-Tab
 favicon-32.png         Icon für ältere Browser
 apple-touch-icon.png   Icon für den Home-Bildschirm auf iPhone und iPad
+og-image.png           Vorschaubild für geteilte Links (1200 × 630)
 README.md              Diese Datei
 LICENSE.md             Lizenzangaben
 ```
@@ -40,6 +41,8 @@ LICENSE.md             Lizenzangaben
 2. Auf [vercel.com](https://vercel.com) «Add New Project» wählen und das Repository importieren.
 3. Bei «Framework Preset» die Option «Other» wählen. Build Command und Output Directory leer lassen.
 4. «Deploy» klicken. Jede spätere Änderung auf GitHub wird automatisch neu veröffentlicht.
+
+Das Vorschaubild für geteilte Links ist in `index.html` mit der festen Adresse `https://darkpatterns-durchschaut.vercel.app` verknüpft. Ändert sich die Adresse, müssen die Angaben `og:url`, `og:image` und `twitter:image` angepasst werden.
 
 ## Inhaltliche Grundlage
 
