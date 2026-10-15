@@ -216,6 +216,10 @@ h1,h2,h3{line-height:1.2;margin:0 0 .4em}
 .badge.locked .ic{filter:grayscale(1);background:var(--paper)}
 
 /* Teacher */
+.tabs{display:flex;gap:8px;margin:10px 0 18px;border-bottom:2px solid var(--ink);flex-wrap:wrap}
+.tabs button{background:none;border:2px solid transparent;border-bottom:0;border-radius:10px 10px 0 0;padding:8px 16px;font-weight:700;cursor:pointer;color:var(--ink-soft);margin-bottom:-2px}
+.tabs button[aria-selected="true"]{background:var(--card);color:var(--ink);border-color:var(--ink);box-shadow:inset 0 3px 0 var(--marker)}
+.tabn{font-weight:400;font-size:.85em;color:var(--ink-soft)}
 .prose{max-width:44em}
 .prose h2{margin-top:1.4em}
 .prose ul{padding-left:1.2em}
@@ -448,7 +452,6 @@ footer .row{margin-top:8px}
     <nav class="nav" aria-label="Hauptnavigation">
       <button class="nav-main" data-go="hub" data-nav>Stationen</button>
       <button data-go="album" data-nav>Sammelalbum</button>
-      <button data-go="badges" data-nav>Abzeichen</button>
       <button data-go="save" data-nav>Mein Fortschritt</button>
     </nav>
     <div class="stats">
@@ -710,7 +713,7 @@ const BADGES = [
  {id:'zwang',ic:'🗝️',name:'Echte Wahl',desc:'Alle 3 Tricks der Kategorie Operativer Zwang entdeckt.'},
  {id:'spot',ic:'🎯',name:'Trickjäger:in',desc:'Alle 6 Apps der Trickjagd geschafft.'},
  {id:'escape',ic:'🚪',name:'Ausbrecher:in',desc:'Alle 4 Missionen bei «Entkommen» geschafft.'},
- {id:'sort',ic:'🗂️',name:'Sortierprofi',desc:'Beim Sortieren mindestens 8 von 10 richtig.'},
+ {id:'sort',ic:'🗂️',name:'Zuordnungsprofi',desc:'Bei «Zuordnen» mindestens 8 von 10 richtig.'},
  {id:'all',ic:'🌟',name:'Voller Durchblick',desc:'Alle 20 Tricks im Sammelalbum.'}
 ];
 
@@ -808,8 +811,7 @@ VIEWS.hub=()=>{
    <div class="stations">
     <button class="note" data-go="spot"><span class="tape"></span><span class="emoji">🎯</span><span class="hand">Trickjagd</span><span>Sechs erfundene Apps. Tippe auf alles, was dich austricksen will.</span><span class="prog">${S.scenes.length} von ${SCENES.length} Apps geschafft</span></button>
     <button class="note" data-go="escape"><span class="tape"></span><span class="emoji">🚪</span><span class="hand">Entkommen</span><span>Cookies ablehnen, ein Abo kündigen, Nein sagen. Klingt einfach?</span><span class="prog">${S.escapes.length} von ${MISSIONS.length} Missionen geschafft</span></button>
-    <button class="note" data-go="sort"><span class="tape"></span><span class="emoji">🗂️</span><span class="hand">Sortieren</span><span>Zehn Beispiele aus dem Alltag. Welcher Trick steckt dahinter?</span><span class="prog">Bestes Ergebnis: ${S.sortBest} von 10</span></button>
-    <button class="note" data-go="album"><span class="tape"></span><span class="emoji">📒</span><span class="hand">Sammelalbum</span><span>Alle 20 Tricks in fünf Kategorien zum Nachlesen.</span><span class="prog">${S.disc.length} von 20 entdeckt</span></button>
+    <button class="note" data-go="sort"><span class="tape"></span><span class="emoji">🗂️</span><span class="hand">Zuordnen</span><span>Zehn Beispiele aus dem Alltag. Welcher Trick steckt dahinter?</span><span class="prog">Bestes Ergebnis: ${S.sortBest} von 10</span></button>
    </div>
   </section>`;
 };
@@ -1048,7 +1050,7 @@ VIEWS.escape=(arg)=>{
       $('#after').innerHTML=`<div class="mission">${m.doneText(st)}</div>
        <p style="margin:4px 0 0"><b>Diese Tricks haben dich aufgehalten:</b></p>
        <div class="opts">${m.patterns.map(id=>`<button class="opt" data-pi="${id}">${chip(P[id].cat)} ${pname(P[id])}</button>`).join('')}</div>
-       <div class="row">${i<MISSIONS.length-1?`<button class="btn primary" data-go="escape" data-arg="${i+1}">Nächste Mission</button>`:`<button class="btn primary" data-go="sort">Weiter zu «Sortieren»</button>`}<button class="btn" id="again2">↺ Nochmals spielen</button></div>`;
+       <div class="row">${i<MISSIONS.length-1?`<button class="btn primary" data-go="escape" data-arg="${i+1}">Nächste Mission</button>`:`<button class="btn primary" data-go="sort">Weiter zu «Zuordnen»</button>`}<button class="btn" id="again2">↺ Nochmals spielen</button></div>`;
       $('#again2').onclick=restart;
       $('#after').onclick=e2=>{const pb=e2.target.closest('[data-pi]');if(pb)openSheet(patternInfo(P[pb.dataset.pi])+'<div class="row"><button class="btn" data-close>Schliessen</button></div>',e3=>{if(e3.target.closest('[data-close]'))closeSheet();});};
   };
@@ -1079,7 +1081,7 @@ VIEWS.escape=(arg)=>{
   };
 };
 
-/* ============ Sortieren ============ */
+/* ============ Zuordnen ============ */
 VIEWS.sort=(arg)=>{
   let run=S.sortRun;
   if(Array.isArray(arg)||!run||!Array.isArray(run.deck)||run.k>=run.deck.length){
@@ -1110,7 +1112,7 @@ VIEWS.sort=(arg)=>{
       opts=shuffle([p,...same,...rest]).map(o=>`<button class="catbtn" style="--cat:var(--c-${o.cat})" data-p="${o.id}"><b>${o.de}</b><small>${o.en}</small></button>`).join('');
     }
     main.innerHTML=`<section class="wrap"><div class="crumbs"><button class="linkbtn" data-go="hub">‹ Stationen</button></div>
-     <h1 class="h1">Sortieren</h1>
+     <h1 class="h1">Zuordnen</h1>
      <div class="progressbar" aria-label="Fortschritt"><i style="width:${k/n*100}%"></i></div>
      <p class="muted">Karte ${k+1} von ${n}. ${lvl()===1?'Zu welcher Kategorie gehört dieser Trick?':'Welcher Trick ist das genau?'}</p>
      <div class="sort-card"><span class="hand">Beispiel</span>${SORTCARDS[pid]}</div>
@@ -1134,38 +1136,46 @@ VIEWS.sort=(arg)=>{
 };
 
 /* ============ Sammelalbum ============ */
-VIEWS.album=()=>{
-  main.innerHTML=`<section class="wrap"><h1 class="h1">Sammelalbum</h1>
-   <p class="lead">${S.disc.length} von 20 Tricks entdeckt. Tippe auf einen Trick, um mehr zu erfahren. Auch die noch nicht entdeckten kannst du schon lesen.</p>
+VIEWS.album=(tab)=>{
+  const showBadges=tab==='badges';
+  const tricks=`<p class="lead">Welche Tricks hast du schon entdeckt? ${S.disc.length} von 20. Tippe auf einen Trick, um mehr zu erfahren. Auch die noch nicht entdeckten kannst du schon lesen.</p>
    ${Object.keys(CATS).map(c=>`<div class="cat-sec" style="--cat:var(--c-${c})"><h2><span class="bar"></span>${CATS[c].name}</h2><p class="muted" style="margin-top:0">${CATS[c].d}</p>
-    <div class="stickers">${PATTERNS.filter(p=>p.cat===c).map(p=>{const got=S.disc.includes(p.id);return `<button class="sticker ${got?'got':''}" data-pi="${p.id}"><b>${p.de}</b><span class="en">${p.en}</span><span class="st">${!got?'noch nicht entdeckt':(S.st&&S.st[p.id]==='unsure')?'↻ nochmals anschauen':'✔ erkannt'}</span></button>`;}).join('')}</div></div>`).join('')}
+    <div class="stickers">${PATTERNS.filter(p=>p.cat===c).map(p=>{const got=S.disc.includes(p.id);return `<button class="sticker ${got?'got':''}" data-pi="${p.id}"><b>${p.de}</b><span class="en">${p.en}</span><span class="st">${!got?'noch nicht entdeckt':(S.st&&S.st[p.id]==='unsure')?'↻ nochmals anschauen':'✔ erkannt'}</span></button>`;}).join('')}</div></div>`).join('')}`;
+  const group=(t,ids)=>`<h2 style="margin-top:1.2em">${t}</h2><div class="badges">${BADGES.filter(b=>ids.includes(b.id)).map(b=>{const got=S.badges.includes(b.id);return `<div class="badge ${got?'':'locked'}"><span class="ic" aria-hidden="true">${b.ic}</span><b>${b.name}</b><span class="muted">${b.desc}</span>${got?'<span style="color:var(--ok);font-weight:700">✔ erhalten</span>':''}</div>`;}).join('')}</div>`;
+  const badges=`<p class="lead">${S.badges.length} von ${BADGES.length} Abzeichen gesammelt.</p>
+   ${group('Für abgeschlossene Stationen',['spot','escape','sort'])}
+   ${group('Für entdeckte Tricks',['druck','ersch','hind','irre','zwang','all'])}`;
+  main.innerHTML=`<section class="wrap"><h1 class="h1">Sammelalbum</h1>
+   <div class="tabs" role="tablist">
+    <button role="tab" aria-selected="${!showBadges}" data-tab="tricks">Tricks <span class="tabn">${S.disc.length}/20</span></button>
+    <button role="tab" aria-selected="${showBadges}" data-tab="badges">Abzeichen <span class="tabn">${S.badges.length}/${BADGES.length}</span></button>
+   </div>
+   <div role="tabpanel">${showBadges?badges:tricks}</div>
   </section>`;
-  main.onclick=e=>{const b=e.target.closest('[data-pi]');if(!b)return;const p=P[b.dataset.pi];
+  main.onclick=e=>{
+    const t=e.target.closest('[data-tab]');if(t){VIEWS.album(t.dataset.tab);return;}
+    const b=e.target.closest('[data-pi]');if(!b)return;const p=P[b.dataset.pi];
     openSheet(patternInfo(p)+`<div class="row"><button class="btn" data-close>Schliessen</button><a class="linkbtn" href="${p.url}" target="_blank" rel="noopener">Echte Beispiele auf da-pa.ch</a></div>`,e2=>{if(e2.target.closest('[data-close]'))closeSheet();});};
 };
+VIEWS.badges=()=>VIEWS.album('badges');
 
-/* ============ Abzeichen ============ */
-VIEWS.badges=()=>{
-  main.innerHTML=`<section class="wrap"><h1 class="h1">Abzeichen</h1><p class="lead">${S.badges.length} von ${BADGES.length} gesammelt. Punkte: ${S.points}.</p>
-   <div class="badges">${BADGES.map(b=>{const got=S.badges.includes(b.id);return `<div class="badge ${got?'':'locked'}"><span class="ic" aria-hidden="true">${b.ic}</span><b>${b.name}</b><span class="muted">${b.desc}</span>${got?'<span style="color:var(--ok);font-weight:700">✔ erhalten</span>':''}</div>`;}).join('')}</div></section>`;
-};
 
 /* ============ Lehrpersonen ============ */
 VIEWS.teach=()=>{
   main.innerHTML=`<section class="wrap prose">
    <h1 class="h1">Für Lehrpersonen</h1>
    <p class="lead">«Durchschaut!» macht die 20 Dark Patterns von <a href="https://da-pa.ch" target="_blank" rel="noopener">da-pa.ch</a> spielerisch erlebbar. Systematik und Begriffe stammen von der Stiftung für Konsumentenschutz, die fünf Kategorien sind Druckausübung, Erschleichung, Hindernisse, Irreführung und Operativer Zwang.</p>
-   <h2>Die vier Stationen</h2>
+   <h2>Die drei Stationen und das Sammelalbum</h2>
    <ul>
     <li><b>Trickjagd:</b> Sechs erfundene Apps mit je vier verdächtigen Stellen. Die Lernenden tippen auf verdächtige Elemente und erhalten eine Erklärung mit Schutztipp. In der letzten App (Social-Media-App) stecken wie in vielen echten Fällen mehrere Tricks in einer Stelle. Wer nicht weiterkommt, kann eine App auflösen und neu starten.</li>
     <li><b>Entkommen:</b> Vier Missionen (Cookies ablehnen, Cookie-Wall «Zahlen oder Zustimmen», Abo kündigen, neuen AGB begegnen). Hier erleben die Lernenden, wie Klick-Müdigkeit, Kakerlakenfalle oder Erzwungene Überprüfung sich anfühlen. Ein Klickzähler macht den Aufwand sichtbar.</li>
-    <li><b>Sortieren:</b> Zehn zufällige Alltagsbeispiele zuordnen.</li>
-    <li><b>Sammelalbum:</b> Alle 20 Tricks zum Nachlesen, mit Links zu echten Beispielen in der Hall of Shame.</li>
+    <li><b>Zuordnen:</b> Zehn zufällige Alltagsbeispiele dem richtigen Trick zuordnen.</li>
+    <li><b>Sammelalbum:</b> Keine Station, sondern die Sammlung. Im Reiter «Tricks» stehen alle 20 Tricks zum Nachlesen, mit Links zu echten Beispielen in der Hall of Shame. Im Reiter «Abzeichen» sammeln die Lernenden Abzeichen für abgeschlossene Stationen und für entdeckte Tricks.</li>
    </ul>
    <h2>Zwei Niveaus</h2>
-   <p><b>Einstieg:</b> einfache Sprache, beim Sortieren werden die fünf Kategorien zugeordnet, Tipps und Fehlklicks kosten keine Punkte.<br><b>Profi:</b> Fachbegriffe mit englischen Originalnamen, gefundene Tricks müssen benannt werden, beim Sortieren wird der genaue Trick bestimmt, Fehlklicks und Tipps kosten Punkte.</p>
+   <p><b>Einstieg:</b> einfache Sprache, beim Zuordnen werden die fünf Kategorien gewählt, Tipps und Fehlklicks kosten keine Punkte.<br><b>Profi:</b> Fachbegriffe mit englischen Originalnamen, gefundene Tricks müssen benannt werden, beim Zuordnen wird der genaue Trick bestimmt, Fehlklicks und Tipps kosten Punkte.</p>
    <h2>Lernbilanz statt Überwachung</h2>
-   <p>Unter «Mein Fortschritt» erstellen die Lernenden selbst eine Lernbilanz. Sie zeigt, welche Tricks sie erkennen, bei welchen sie noch unsicher sind (aufgelöst, falsch benannt oder falsch sortiert) und welchen sie noch nicht begegnet sind. Dazu kommen zwei freiwillige Reflexionsfragen. Punkte, Klickzahlen, Zeiten und Fehlversuche stehen nicht drin. Die Lernenden entscheiden, ob sie die Datei teilen.</p>
+   <p>Unter «Mein Fortschritt» erstellen die Lernenden selbst eine Lernbilanz. Sie zeigt, welche Tricks sie erkennen, bei welchen sie noch unsicher sind (aufgelöst, falsch benannt oder falsch zugeordnet) und welchen sie noch nicht begegnet sind. Dazu kommen zwei freiwillige Reflexionsfragen. Punkte, Klickzahlen, Zeiten und Fehlversuche stehen nicht drin. Die Lernenden entscheiden, ob sie die Datei teilen.</p>
    <p>So lässt sich die Bilanz nutzen: Die Liste «noch unsicher» eignet sich für eine kurze Repetition, die Reflexionsantworten für ein Klassengespräch. Eine Bewertung oder Notengebung ist damit nicht gedacht.</p>
    <h2>Datenschutz</h2>
    <p>Keine Anmeldung, keine Namen. Punkte, Abzeichen und Sammelalbum werden nur lokal im Browser des jeweiligen Geräts gespeichert. Auf geteilten Geräten lässt sich der Stand unten zurücksetzen.</p>
@@ -1248,7 +1258,7 @@ VIEWS.save=()=>{
    <h1 class="h1">Mein Fortschritt</h1>
    <p class="lead">Dein Fortschritt ist nur in diesem Browser gespeichert. Hier kannst du deine Lernbilanz anschauen, den Spielstand mitnehmen oder neu anfangen.</p>
    <h2>Meine Lernbilanz</h2>
-   <p>Damit siehst du, was du schon kannst und was du nochmals anschauen solltest. «Unsicher» heisst: aufgelöst, falsch benannt oder falsch sortiert. Wenn du einen Trick später richtig erkennst, wandert er nach oben.</p>
+   <p>Damit siehst du, was du schon kannst und was du nochmals anschauen solltest. «Unsicher» heisst: aufgelöst, falsch benannt oder falsch zugeordnet. Wenn du einen Trick später richtig erkennst, wandert er nach oben.</p>
    <div class="summary">${summaryHtml()}</div>
    <p>Wenn du willst, kannst du die Bilanz als Datei speichern und deiner Lehrperson geben. Punkte, Fehlversuche und Zeiten stehen nicht drin.</p>
    ${REFLECT.map((q,k)=>`<label class="field">${q} <span class="muted" style="font-weight:400">(freiwillig)</span><textarea data-r="${k}" rows="2" maxlength="400" style="font-family:inherit;font-size:1rem">${reflectDraft[k].replace(/</g,'&lt;')}</textarea></label>`).join('')}

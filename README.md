@@ -4,12 +4,12 @@ Ein Lernspiel für den Unterricht in Medien und Informatik. Schülerinnen und Sc
 
 ## Inhalt
 
-Das Spiel besteht aus vier Stationen:
+Das Spiel besteht aus drei Stationen und einem Sammelalbum:
 
 - **Trickjagd:** Sechs erfundene Apps (Sneaker-Shop, Game-Shop, Foto-App, Ticket-Kasse, Essenslieferung, Social-Media-App) mit je vier verdächtigen Stellen. In der Social-Media-App stecken mehrere Tricks in einer Stelle, wie in vielen echten Fällen.
 - **Entkommen:** Vier Missionen: Cookies ablehnen, Cookie-Wall, Abo kündigen, neue Nutzungsbedingungen. Ein Klickzähler macht sichtbar, wie viel Aufwand das Ablehnen kostet.
-- **Sortieren:** Zehn Alltagsbeispiele den richtigen Tricks zuordnen.
-- **Sammelalbum:** Alle 20 Tricks in fünf Kategorien zum Nachlesen, mit Links zu echten Beispielen in der Hall of Shame von da-pa.ch.
+- **Zuordnen:** Zehn Alltagsbeispiele den richtigen Tricks zuordnen.
+- **Sammelalbum:** Im Reiter «Tricks» alle 20 Tricks in fünf Kategorien zum Nachlesen, mit Links zu echten Beispielen in der Hall of Shame von da-pa.ch. Im Reiter «Abzeichen» die Abzeichen für abgeschlossene Stationen und entdeckte Tricks.
 
 Es gibt zwei Niveaus. **Einstieg** arbeitet mit einfacher Sprache, Tipps und Fehlklicks kosten keine Punkte. **Profi** verwendet Fachbegriffe mit den englischen Originalnamen, gefundene Tricks müssen benannt werden.
 
