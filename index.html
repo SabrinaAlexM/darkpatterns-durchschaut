@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Durchschaut! Dark Patterns erkennen</title>
+<meta name="description" content="Lernspiel zu Dark Patterns: 20 Designtricks aus Apps und Webseiten erkennen, in zwei Niveaus. Für den Unterricht in Medien und Informatik.">
+<meta name="theme-color" content="#1B2B4B">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231B2B4B'/%3E%3Ccircle cx='27' cy='27' r='13' fill='%23FFE14D' fill-opacity='.25' stroke='%23FFE14D' stroke-width='6'/%3E%3Cpath d='M37 37 L50 50' stroke='%23FFE14D' stroke-width='8' stroke-linecap='round'/%3E%3Cpath d='M21 27.5 L25.5 32 L33 23' fill='none' stroke='%23FF6B57' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Gochi+Hand&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F5F8FC; --grid:#DCE5F1; --ink:#1B2B4B; --ink-soft:#4E5B73; --card:#FFFFFF; --line:#C3CFE0;
+  --marker:#FFE14D; --on-marker:#1B2B4B; --red:#D93A26; --blue:#2350C8; --ok:#11805F; --frame:#1B2B4B;
+  --c-druck:#D93A26; --c-ersch:#7B45C9; --c-hind:#0E8A6E; --c-irre:#E9A21C; --c-zwang:#2563C9; --chip-text:#FFFFFF;
+  --n-a:#FFF2A1; --n-b:#CFEBFF; --n-c:#FFD9E2; --n-d:#D3F4DE;
+  --hand:"Gochi Hand","Chalkboard SE","Comic Sans MS",cursive;
+  --body:"Atkinson Hyperlegible",Verdana,"Segoe UI",system-ui,sans-serif;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#172530; --grid:#203241; --ink:#EAF0F7; --ink-soft:#A8B6C6; --card:#1F303D; --line:#33495A;
+    --marker:#F3D33A; --on-marker:#172530; --red:#FF7462; --blue:#8AAEFF; --ok:#45CFA0; --frame:#0E1820;
+    --c-druck:#FF7A66; --c-ersch:#B98FF5; --c-hind:#3FCBA6; --c-irre:#F0AA3C; --c-zwang:#73A6FF; --chip-text:#132029;
+    --n-a:#4A4520; --n-b:#1F4058; --n-c:#4D2B36; --n-d:#21483A;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#172530; --grid:#203241; --ink:#EAF0F7; --ink-soft:#A8B6C6; --card:#1F303D; --line:#33495A;
+  --marker:#F3D33A; --on-marker:#172530; --red:#FF7462; --blue:#8AAEFF; --ok:#45CFA0; --frame:#0E1820;
+  --c-druck:#FF7A66; --c-ersch:#B98FF5; --c-hind:#3FCBA6; --c-irre:#F0AA3C; --c-zwang:#73A6FF; --chip-text:#132029;
+  --n-a:#4A4520; --n-b:#1F4058; --n-c:#4D2B36; --n-d:#21483A;
+  color-scheme:dark;
+}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 80px);height:100%}
+*,*::before,*::after{box-sizing:inherit}
+body{
+  margin:0;min-height:100%;
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px;
+  color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.5;
+}
+img,svg{max-width:100%}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+a{color:var(--blue)}
+.hand{font-family:var(--hand);font-weight:400}
+.wrap{max-width:1040px;margin:0 auto;padding:0 18px}
+.mark{background:linear-gradient(transparent 58%,var(--marker) 58%,var(--marker) 90%,transparent 90%);color:inherit}
+
+/* Header */
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--paper);border-bottom:2px solid var(--ink)}
+.top-in{display:flex;align-items:center;gap:10px 16px;flex-wrap:wrap;padding:10px 18px;max-width:1040px;margin:0 auto}
+.brand{font-family:var(--hand);font-size:1.9rem;line-height:1;background:none;border:0;cursor:pointer;padding:2px 0;color:var(--ink)}
+.brand span{background:linear-gradient(transparent 55%,var(--marker) 55%,var(--marker) 92%,transparent 92%)}
+.nav{display:flex;gap:4px;flex-wrap:wrap;margin-right:auto}
+.nav button{background:none;border:0;padding:6px 10px;border-radius:8px;cursor:pointer;font-weight:700;color:var(--ink-soft)}
+.nav button[aria-current="page"]{color:var(--ink);background:var(--card);box-shadow:inset 0 -3px 0 var(--marker)}
+.nav{align-items:center}
+.nav button:not(.nav-main){font-size:.92rem}
+.nav .nav-main,.nav .nav-main[aria-current="page"]{background:var(--marker);color:var(--on-marker);border:2px solid var(--ink);box-shadow:3px 3px 0 var(--ink);font-size:1.05rem;padding:6px 16px;margin-right:6px}
+.nav .nav-main:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.stats{display:flex;gap:8px;align-items:center}
+.stat{font-weight:700;padding:4px 10px;border:2px solid var(--ink);border-radius:999px;background:var(--card);cursor:pointer}
+.stat.pts{background:var(--marker);color:var(--on-marker);border-color:var(--ink)}
+
+/* Buttons */
+.btn{font-weight:700;padding:.65em 1.1em;border:2px solid var(--ink);border-radius:12px;background:var(--card);color:var(--ink);cursor:pointer;box-shadow:3px 3px 0 var(--ink);display:inline-flex;align-items:center;gap:.4em;text-decoration:none}
+.btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--ink)}
+.btn.primary{background:var(--marker);color:var(--on-marker)}
+.btn.small{padding:.4em .8em;font-size:.92rem}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.linkbtn{background:none;border:0;padding:4px 0;color:var(--ink-soft);cursor:pointer;font-weight:700;text-decoration:underline;text-underline-offset:3px}
+
+main{padding:22px 0 60px;outline:none}
+h1,h2,h3{line-height:1.2;margin:0 0 .4em}
+.h1{font-size:clamp(1.7rem,4vw,2.3rem)}
+.lead{font-size:1.15rem;max-width:36em}
+.muted{color:var(--ink-soft)}
+.chip{display:inline-block;padding:.12em .65em;border-radius:999px;font-weight:700;font-size:.82rem;color:var(--chip-text);background:var(--cat);white-space:nowrap}
+.chip.ink{color:#1B2B4B}
+.en{font-weight:400;color:var(--ink-soft);font-size:.9em}
+
+/* Start */
+.hero{display:grid;grid-template-columns:1.2fr 1fr;gap:28px;align-items:center;padding-top:20px;padding-bottom:28px}
+.hero h1{font-family:var(--hand);font-size:clamp(3.4rem,10vw,6.4rem);line-height:.95;margin:0 0 .2em;transform:rotate(-2deg);transform-origin:left}
+.hero h1 span{background:linear-gradient(transparent 60%,var(--marker) 60%,var(--marker) 88%,transparent 88%)}
+.demo-pop{position:relative;background:#fff;color:#1d2230;border-radius:16px;padding:22px 20px 26px;box-shadow:6px 6px 0 var(--ink);border:2px solid var(--ink);max-width:340px;margin:0 auto;font-family:system-ui,-apple-system,"Segoe UI",sans-serif;display:grid;gap:12px;text-align:center}
+.demo-pop b{font-size:1.25rem}
+.demo-yes{background:#16a34a;color:#fff;padding:12px;border-radius:10px;font-weight:700}
+.demo-no{font-size:.8rem;color:#9aa1ad;position:relative;justify-self:center;padding:4px 6px}
+.demo-no::before{content:"";position:absolute;inset:-8px -14px;border:3px solid var(--red);border-radius:55% 45% 52% 48% / 60% 50% 50% 40%;transform:rotate(-3deg);animation:draw .7s .6s both}
+.demo-note{position:absolute;right:-18px;bottom:-26px;font-size:2.1rem;color:var(--red);transform:rotate(-8deg);animation:pop .4s 1.2s both}
+.pick{padding-bottom:20px}
+.pick-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;margin:12px 0 18px}
+.level-btn{text-align:left;cursor:pointer;border:2px solid var(--ink);border-radius:14px;padding:16px 18px;background:var(--card);box-shadow:4px 4px 0 var(--ink);display:grid;gap:4px}
+.level-btn .hand{font-size:2rem;line-height:1}
+.level-btn:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--ink)}
+
+/* Hub */
+.stations{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:22px;margin:22px 0}
+.note{border:0;text-align:left;cursor:pointer;padding:20px 18px 18px;min-height:190px;display:flex;flex-direction:column;gap:6px;color:var(--ink);box-shadow:2px 6px 0 rgba(27,43,75,.18);position:relative}
+.note:nth-child(1){background:var(--n-a);transform:rotate(-1.4deg)}
+.note:nth-child(2){background:var(--n-b);transform:rotate(1deg)}
+.note:nth-child(3){background:var(--n-c);transform:rotate(-.6deg)}
+.note:nth-child(4){background:var(--n-d);transform:rotate(1.5deg)}
+.note:hover{transform:rotate(0) translateY(-2px)}
+.note .hand{font-size:2.1rem;line-height:1}
+.note .prog{margin-top:auto;font-weight:700}
+.note .emoji{font-size:1.8rem}
+.tape{position:absolute;top:-10px;left:50%;width:70px;height:20px;margin-left:-35px;background:rgba(255,255,255,.55);transform:rotate(-3deg)}
+
+/* Pickers */
+.picker{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:16px 0}
+.pick-item{text-align:left;border:2px solid var(--ink);border-radius:12px;background:var(--card);padding:14px 16px;cursor:pointer;display:grid;gap:4px;box-shadow:3px 3px 0 var(--ink)}
+.pick-item .done{color:var(--ok);font-weight:700}
+.crumbs{margin-bottom:10px}
+
+/* Game layout */
+.game{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:28px;align-items:start}
+.side{position:sticky;top:90px;display:grid;gap:12px}
+.side h2{font-size:1.5rem}
+.mission{background:var(--card);border:2px solid var(--ink);border-radius:12px;padding:12px 14px}
+.dots{display:flex;gap:8px;flex-wrap:wrap}
+.dot{width:30px;height:30px;border-radius:50%;border:2px dashed var(--ink-soft);display:grid;place-items:center;font-weight:700}
+.dot.on{border:2px solid var(--red);background:var(--red);color:var(--chip-text)}
+.hint{font-family:var(--hand);font-size:1.35rem;color:var(--red);margin:0;min-height:1.2em}
+.phone-wrap{position:relative;order:2}
+.phone{width:min(370px,100%);margin:0 auto;border:11px solid var(--frame);border-radius:36px;background:#fff;overflow:hidden;box-shadow:7px 7px 0 var(--marker)}
+.screen{height:min(640px,78vh);overflow-y:auto;position:relative;background:#fff;color:#16181d}
+.side{order:1}
+
+/* Hotspots */
+.hs{background:none;border:0;padding:0;margin:0;cursor:pointer;text-align:inherit;position:relative;display:block;width:100%;font:inherit;color:inherit}
+.hs.caught::before{content:"";position:absolute;inset:-5px -6px;border:3px solid var(--red);border-radius:50% 46% 54% 44% / 55% 48% 52% 45%;pointer-events:none;animation:draw .45s both;z-index:2}
+.hs.caught::after{content:attr(data-tag);position:absolute;top:-14px;right:4px;font-family:var(--hand);font-size:1.05rem;line-height:1.1;background:#FFE14D;color:#1B2B4B;padding:1px 8px;transform:rotate(-4deg);pointer-events:none;z-index:3;white-space:normal;max-width:85%;text-align:right;box-shadow:1px 1px 0 rgba(0,0,0,.25)}
+.hs.miss{animation:shake .35s}
+@keyframes draw{from{clip-path:inset(0 100% 0 0);opacity:.3}to{clip-path:inset(0 0 0 0);opacity:1}}
+@keyframes pop{from{transform:scale(.3) rotate(-8deg);opacity:0}to{transform:scale(1) rotate(-8deg);opacity:1}}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+
+/* Stamp */
+.stamp{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none;z-index:5}
+.stamp span{font-family:var(--hand);font-size:3rem;color:var(--red);border:5px solid var(--red);border-radius:14px;padding:4px 18px;background:rgba(255,255,255,.85);transform:rotate(-12deg);animation:stamp .5s cubic-bezier(.2,1.6,.5,1) both}
+@keyframes stamp{from{transform:rotate(-12deg) scale(2.4);opacity:0}to{transform:rotate(-12deg) scale(1);opacity:1}}
+
+/* Sheet */
+.sheet{position:fixed;inset:0;z-index:50;background:rgba(10,18,30,.45);display:flex;align-items:flex-end;justify-content:center;padding:16px;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+.sheet[hidden]{display:none}
+.sheet-card{background:var(--card);color:var(--ink);border:2px solid var(--ink);border-radius:16px;box-shadow:5px 5px 0 var(--ink);width:min(520px,100%);max-height:85vh;overflow-y:auto;padding:20px 20px 18px;display:grid;gap:10px;animation:up .25s ease-out}
+@media (min-width:700px){.sheet{align-items:center}}
+@keyframes up{from{transform:translateY(30px);opacity:0}to{transform:none;opacity:1}}
+.sheet-card h3{font-size:1.35rem;margin:0}
+.tip{background:var(--n-d);border-radius:10px;padding:10px 12px;color:var(--ink)}
+.tip b{display:block}
+.opts{display:grid;gap:8px}
+.opt{text-align:left;padding:10px 12px;border:2px solid var(--ink);border-radius:10px;background:var(--card);cursor:pointer;font-weight:700}
+.opt.right{background:var(--ok);color:var(--chip-text);border-color:var(--ok)}
+.opt.wrong{background:var(--red);color:var(--chip-text);border-color:var(--red)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.verdict{font-family:var(--hand);font-size:1.8rem;line-height:1}
+.verdict.good{color:var(--ok)} .verdict.bad{color:var(--red)}
+
+/* Toast */
+.toasts{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:60;display:grid;gap:8px;justify-items:center;pointer-events:none}
+.toast{background:var(--ink);color:var(--paper);padding:8px 16px;border-radius:999px;font-weight:700;animation:up .25s ease-out}
+.toast.badge{background:var(--marker);color:var(--on-marker);border:2px solid var(--ink)}
+
+/* Sort */
+.sort-card{background:var(--n-a);color:var(--ink);padding:26px 22px;font-size:1.2rem;box-shadow:2px 6px 0 rgba(27,43,75,.18);transform:rotate(-.8deg);margin:14px 0 20px;max-width:640px;position:relative}
+.sort-card .hand{font-size:1.4rem;color:var(--ink-soft);display:block}
+.catbtns{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;max-width:760px}
+.catbtn{border:2px solid var(--ink);border-left:12px solid var(--cat);border-radius:10px;background:var(--card);padding:10px 12px;text-align:left;cursor:pointer;display:grid;gap:2px}
+.catbtn small{color:var(--ink-soft);font-weight:400}
+.catbtn b{font-size:1.05rem}
+.catbtn.right{outline:4px solid var(--ok)} .catbtn.wrong{outline:4px solid var(--red)}
+.progressbar{height:10px;background:var(--card);border:2px solid var(--ink);border-radius:99px;overflow:hidden;max-width:640px}
+.progressbar i{display:block;height:100%;background:var(--marker)}
+
+/* Album */
+.cat-sec{margin:26px 0}
+.cat-sec h2{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.cat-sec h2 .bar{width:16px;height:28px;background:var(--cat);border-radius:4px}
+.stickers{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+.sticker{text-align:left;cursor:pointer;border:2px dashed var(--line);border-radius:14px;background:transparent;padding:12px 14px;display:grid;gap:4px;min-height:96px}
+.sticker .st{font-size:.8rem;color:var(--ink-soft)}
+.sticker.got{border:2px solid var(--ink);background:var(--card);box-shadow:3px 3px 0 var(--cat)}
+.sticker.got .st{color:var(--ok);font-weight:700}
+
+/* Badges */
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;margin-top:16px}
+.badge{border:2px solid var(--ink);border-radius:16px;background:var(--card);padding:16px;display:grid;gap:4px;justify-items:start}
+.badge .ic{font-size:2.4rem;width:64px;height:64px;border-radius:50%;display:grid;place-items:center;background:var(--marker);border:3px solid var(--ink)}
+.badge.locked{opacity:.55;border-style:dashed}
+.badge.locked .ic{filter:grayscale(1);background:var(--paper)}
+
+/* Teacher */
+.prose{max-width:44em}
+.prose h2{margin-top:1.4em}
+.prose ul{padding-left:1.2em}
+.prose li{margin:.3em 0}
+footer{border-top:2px solid var(--ink);padding:18px 0 30px;font-size:.92rem;color:var(--ink-soft)}
+footer .row{margin-top:8px}
+.field{display:grid;gap:4px;font-weight:700;margin:10px 0;max-width:560px}
+.field input,.field textarea{font:inherit;font-weight:400;padding:10px;border:2px solid var(--ink);border-radius:10px;background:var(--card);color:var(--ink);width:100%}
+.field textarea{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:.8rem;word-break:break-all}
+.summary{background:var(--card);border:2px solid var(--ink);border-radius:12px;padding:14px 16px;max-width:640px}
+.summary dl{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:0}
+.summary dt{font-weight:700}
+.summary dd{margin:0}
+.addr{font-style:normal}
+
+/* ===== Fake apps (eigene, feste Farben wie echte Screenshots) ===== */
+.app{font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:14px;line-height:1.35;min-height:100%;color:#16181d;background:#fff}
+/* KickZ */
+.kick .k-bar{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid #eee}
+.kick .k-logo{font-weight:900;letter-spacing:2px;font-size:18px;width:auto}
+.kick .k-img{background:#f1f0ec;padding:20px 26px}
+.kick .k-pad{padding:14px 16px 20px;display:grid;gap:10px}
+.kick .k-name{font-size:20px;margin:0}
+.kick .k-price{font-size:22px;font-weight:800}
+.kick .k-timer{background:#e11d48;color:#fff;border-radius:8px;padding:8px 10px;font-weight:700}
+.kick .k-scarce{color:#c2410c;font-weight:700}
+.kick .k-watch{color:#555;font-size:13px}
+.kick .k-size{border:1px solid #bbb;border-radius:8px;padding:10px}
+.kick .k-cta{background:#111;color:#fff;text-align:center;border-radius:10px;padding:14px;font-weight:700}
+.kick .k-more{font-weight:700;margin-top:6px}
+.kick .k-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.kick .k-tile{background:#f6f6f4;border-radius:10px;padding:10px;font-size:13px}
+.kick .k-ti{display:block;font-size:34px;text-align:center;background:#ecebe6;border-radius:8px;margin-bottom:6px}
+.kick .k-anz{display:block;font-size:9px;color:#aaa;text-align:right;margin-top:2px}
+/* Pixel Arena */
+.pix{background:#221443;color:#f5f0ff;padding-bottom:20px}
+.pix .px-bar{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;background:#170c33}
+.pix .px-lv,.pix .px-gems{width:auto;font-weight:800}
+.pix .px-xp{display:inline-block;width:60px;height:8px;background:#3d2c70;border-radius:9px;vertical-align:middle;margin-left:6px;overflow:hidden}
+.pix .px-xp i{display:block;width:65%;height:100%;background:#7cf}
+.pix .px-nag{margin:12px 14px 0;width:calc(100% - 28px);background:#ffcf33;color:#2a1a00;border-radius:10px;padding:10px 12px;font-weight:700}
+.pix .px-h{padding:16px 14px 6px;font-weight:800;color:#b9a9ff;font-size:13px;letter-spacing:.04em}
+.pix .px-skin{display:flex;gap:12px;align-items:center;margin:0 14px;background:#33206a;border-radius:12px;padding:12px}
+.pix .px-skinimg{font-size:38px}
+.pix .px-skin>div:nth-child(2){flex:1}
+.pix .px-bait{width:auto;background:#6d4dff;padding:10px 12px;border-radius:10px;font-weight:800;white-space:nowrap}
+.pix .px-packs{display:grid;gap:6px;margin:0 14px;width:calc(100% - 28px)}
+.pix .px-packs>span{background:#33206a;border-radius:10px;padding:10px 12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.pix .px-packs em{font-style:normal;background:#ff4fa3;color:#fff;font-size:10px;font-weight:800;padding:2px 6px;border-radius:6px}
+.pix .px-offer{margin:16px 14px 0;background:linear-gradient(160deg,#c94a00,#b81a5c);border-radius:14px;padding:14px;display:grid;gap:8px;text-align:center}
+.pix .px-offer p{margin:0}
+.pix .px-yes{background:#fff;color:#c2185b;font-weight:900;border-radius:10px;padding:12px;text-align:center}
+.pix .px-no{font-size:11px;color:#ffe3ef;text-align:center;padding:4px}
+.pix .px-set{margin:16px 14px 0;width:auto;color:#b9a9ff}
+/* PhotoPop */
+.pop .pp-bar{padding:14px 16px;background:#fff;border-bottom:1px solid #f0d6e3}
+.pop .pp-logo{font-weight:900;color:#e0358b;font-size:20px;width:auto}
+.pop .pp-photo{height:150px;display:grid;place-items:center;font-size:80px;background:linear-gradient(#ffd6a8,#ff9ec4)}
+.pop .pp-filters{display:flex;gap:8px;padding:10px 16px;overflow:hidden}
+.pop .pp-filters span{border:1px solid #e9c6d8;border-radius:99px;padding:6px 10px;font-size:12px}
+.pop .pp-card{margin:8px 16px 0;width:calc(100% - 32px);border-radius:12px;padding:12px;background:#fff0f7;display:grid;gap:2px}
+.pop .pp-price{font-size:18px;font-weight:800;color:#e0358b}
+.pop .pp-fine{font-size:9px;color:#c9a5b6}
+.pop .pp-pro{background:#2b1b3d;color:#fff}
+.pop .pp-pro .pp-fine{color:#8c7aa3}
+.pop .pp-perm{margin:12px 16px 0;width:calc(100% - 32px);border:1px solid #ddd;border-radius:12px;padding:12px;display:grid;gap:6px;font-size:13px}
+.pop .pp-allow{background:#e0358b;color:#fff;text-align:center;border-radius:8px;padding:8px;font-weight:700}
+.pop .pp-check{margin:14px 16px 0;width:calc(100% - 32px);display:flex;gap:8px;align-items:flex-start;font-size:13px}
+.pop .pp-box{flex:0 0 18px;height:18px;border:2px solid #999;border-radius:4px}
+.pop .pp-shoot{margin:16px;width:calc(100% - 32px);background:#e0358b;color:#fff;text-align:center;border-radius:99px;padding:14px;font-weight:800}
+/* TicketFix */
+.tix{background:#f2f4f8;padding-bottom:20px}
+.tix .tx-bar{background:#1a4fd6;color:#fff;padding:14px 16px;font-weight:800;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.tix .tx-bar span{font-weight:400;font-size:12px;opacity:.85}
+.tix .tx-event{margin:14px 16px 0;width:calc(100% - 32px);background:#fff;border-radius:12px;padding:12px;display:grid}
+.tix .tx-list{margin:12px 16px 0;background:#fff;border-radius:12px;padding:4px 12px}
+.tix .tx-row{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid #eceef3}
+.tix .tx-row span:last-child{text-align:right;font-variant-numeric:tabular-nums}
+.tix .tx-fees{font-size:12px;color:#666}
+.tix .tx-box{display:inline-grid;place-items:center;width:16px;height:16px;background:#1a4fd6;color:#fff;border-radius:3px;font-size:11px;margin-right:6px}
+.tix .tx-total{font-weight:800;border-bottom:0}
+.tix .tx-promo{margin:14px 16px 0;width:calc(100% - 32px);display:grid;gap:4px}
+.tix .tx-gift{background:#ffd400;color:#1d1d1d;text-align:center;font-weight:900;padding:14px;border-radius:12px;font-size:15px}
+.tix .tx-small{font-size:9px;color:#9aa0aa;padding:0 4px}
+.tix .tx-pay{margin:14px 16px 0;width:calc(100% - 32px);background:#1a4fd6;color:#fff;text-align:center;border-radius:12px;padding:14px;font-weight:800}
+/* Food */
+.food{background:#fff;padding-bottom:20px}
+.food .fd-bar{padding:14px 16px;background:#ff5a1f}
+.food .fd-logo{color:#fff;font-weight:900;font-size:18px;width:auto}
+.food .fd-rush{margin:12px 16px 0;width:calc(100% - 32px);background:#fff4e5;color:#b45309;border-radius:10px;padding:10px 12px;font-weight:700;font-size:13px}
+.food .fd-sec{padding:16px 16px 6px;font-weight:800}
+.food .fd-row,.food .fd-line{display:flex;justify-content:space-between;gap:10px}
+.food .fd-row{padding:8px 16px}
+.food .fd-addr{padding:8px 16px;color:#555;font-size:13px}
+.food .fd-plus{margin:10px 16px 0;width:calc(100% - 32px);background:#1f1147;color:#fff;border-radius:12px;padding:12px;display:grid;gap:4px}
+.food .fd-plus small{font-size:9px;color:#8f86b8}
+.food .fd-plusbtn{background:#ffd23f;color:#1f1147;border-radius:8px;padding:8px;text-align:center;font-weight:800}
+.food .fd-tips{display:flex;gap:8px;padding:0 16px}
+.food .fd-tips span{flex:1;text-align:center;border:1px solid #ddd;border-radius:8px;padding:8px 0;font-size:13px}
+.food .fd-tips .sel{background:#ff5a1f;color:#fff;border-color:#ff5a1f;font-weight:800}
+.food .fd-sum{margin:16px 16px 0;border-top:1px solid #eee;padding-top:6px}
+.food .fd-sum .fd-line{padding:6px 0}
+.food .fd-fees{display:flex;justify-content:space-between;font-size:10px;color:#aaa;padding:4px 0}
+.food .fd-fees span:last-child{text-align:right}
+.food .fd-tot{font-weight:800;font-size:16px}
+.food .fd-order{margin:14px 16px 0;width:calc(100% - 32px);background:#ff5a1f;color:#fff;text-align:center;border-radius:12px;padding:14px;font-weight:800}
+/* Flicky (Kombi) */
+.flk{background:#101014;color:#f4f4f5;padding-bottom:16px;min-height:100%}
+.flk .fl-bar{display:flex;justify-content:space-between;align-items:center;padding:12px 16px}
+.flk .fl-logo{width:auto;font-weight:900;font-size:22px;background:linear-gradient(90deg,#22d3ee,#f472b6);-webkit-background-clip:text;background-clip:text;color:transparent}
+.flk .fl-streak{margin:4px 14px 0;width:calc(100% - 28px);background:linear-gradient(135deg,#f97316,#db2777);border-radius:14px;padding:12px;display:grid;gap:4px;font-size:13px}
+.flk .fl-streak small{font-size:10px;opacity:.8}
+.flk .fl-msg{margin:12px 14px 0;width:calc(100% - 28px);background:#1c1c22;border-radius:14px;padding:10px 12px;display:flex;gap:10px;align-items:center;font-size:13px}
+.flk .fl-av{flex:0 0 34px;width:34px;height:34px;border-radius:50%;background:#22d3ee;color:#101014;display:inline-grid;place-items:center;font-weight:900}
+.flk .fl-post{margin:12px 14px 0;width:calc(100% - 28px);background:#1c1c22;border-radius:14px;padding:10px;display:grid;gap:8px;font-size:13px}
+.flk .fl-who{display:flex;gap:8px;align-items:center}
+.flk .fl-who small{font-size:9px;color:#5b5b66;margin-left:auto}
+.flk .fl-vid{height:120px;border-radius:10px;background:linear-gradient(160deg,#312e81,#be185d);display:grid;place-items:center;font-size:56px}
+.flk .fl-cta{background:#fff;color:#101014;text-align:center;border-radius:10px;padding:10px;font-weight:800}
+.flk .fl-gold{margin:12px 14px 0;width:calc(100% - 28px);background:#2a2110;border:1px solid #a16207;border-radius:14px;padding:12px;display:grid;gap:6px;font-size:13px}
+.flk .fl-gold small{font-size:9px;color:#8a7650}
+.flk .fl-goldbtn{background:#facc15;color:#1c1500;text-align:center;border-radius:10px;padding:10px;font-weight:900}
+.flk .fl-no{text-align:center;font-size:10px;color:#8a7650}
+.flk .fl-priv{margin:12px 14px 0;width:calc(100% - 28px);background:#1c1c22;border-radius:14px;padding:12px;display:grid;gap:8px;font-size:13px}
+.flk .fl-box{display:inline-grid;place-items:center;width:16px;height:16px;background:#22d3ee;color:#101014;border-radius:3px;font-size:11px;margin-right:8px}
+.flk .fl-nav{margin:14px 14px 0;width:calc(100% - 28px);display:flex;justify-content:space-around;background:#1c1c22;border-radius:14px;padding:10px;font-size:20px}
+/* Resale (Kombi) */
+.resale{background:#0f172a;color:#e2e8f0;padding-bottom:20px;min-height:100%}
+.resale .rs-bar{padding:14px 16px;font-weight:900;font-size:18px;color:#22d3ee}
+.resale .rs-event{margin:0 16px;width:calc(100% - 32px);background:#1e293b;border-radius:12px;padding:12px;display:grid}
+.resale .rs-press{margin:12px 16px 0;width:calc(100% - 32px);display:grid;gap:6px}
+.resale .rs-press span{background:#7f1d1d;color:#fecaca;border-radius:8px;padding:8px 10px;font-weight:700;font-size:13px}
+.resale .rs-seats{margin:12px 16px 0;width:calc(100% - 32px);background:#1e293b;border-radius:10px;padding:10px}
+.resale .rs-price{margin:12px 16px 0;width:calc(100% - 32px);display:grid}
+.resale .rs-big{font-size:30px;font-weight:900;color:#fff}
+.resale .rs-price small,.resale .rs-addon small,.resale .rs-pay small{font-size:9px;color:#64748b}
+.resale .rs-addon{margin:12px 16px 0;width:calc(100% - 32px);background:#1e293b;border-radius:10px;padding:12px;display:grid;gap:6px}
+.resale .rs-box{display:inline-grid;place-items:center;width:16px;height:16px;background:#22d3ee;color:#0f172a;border-radius:3px;font-size:11px;margin-right:6px}
+.resale .rs-pay{margin:14px 16px 0;width:calc(100% - 32px);display:grid;gap:4px}
+.resale .rs-paybtn{background:#22d3ee;color:#0f172a;text-align:center;border-radius:12px;padding:14px;font-weight:900}
+/* Escape: News */
+.news{background:#fff;min-height:640px;position:relative;color:#1b1b1b}
+.news .nw-top{background:#0b3d91;color:#fff;padding:14px 16px;font-weight:800;font-family:Georgia,serif;font-size:18px}
+.news .nw-body{padding:16px;filter:blur(3px)}
+.news .nw-body h4{font-family:Georgia,serif;font-size:20px;margin:0 0 8px}
+.nw-wall{position:absolute;inset:0;background:rgba(255,255,255,.55);display:grid;place-items:center;padding:18px}
+.nw-box{background:#fff;border:1px solid #ddd;border-radius:14px;padding:18px;display:grid;gap:10px;box-shadow:0 10px 30px rgba(0,0,0,.2)}
+.nw-box h4{margin:0;font-size:17px}
+.nw-box p{margin:0;font-size:13px;color:#444}
+.nw-ok{background:#0b3d91;color:#fff;border:0;border-radius:10px;padding:14px;font-weight:800;cursor:pointer;font-size:15px}
+.nw-abo{background:#fff;color:#0b3d91;border:1px solid #0b3d91;border-radius:10px;padding:10px;cursor:pointer;font-size:13px}
+.nw-link{background:none;border:0;color:#666;text-decoration:underline;cursor:pointer;font-size:12px}
+.nw-field{border:1px solid #ccc;border-radius:8px;padding:10px;font-size:13px;color:#999;text-align:left}
+.opt.picked{background:var(--marker);color:var(--on-marker)}
+/* Escape: Wetter */
+.wet{background:linear-gradient(#7fb8ec,#cfe6fb);min-height:640px;position:relative}
+.wet .w-top{padding:14px 16px;font-weight:800;color:#0d3a66}
+.wet .w-body{padding:20px 16px;color:#0d3a66}
+.wet .w-big{font-size:72px;font-weight:200;line-height:1}
+.wet .w-days{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:20px;text-align:center;font-size:13px}
+.wet .w-days span{background:rgba(255,255,255,.5);border-radius:10px;padding:8px 2px}
+.ck-overlay{position:absolute;inset:0;background:rgba(0,0,0,.35);display:flex;align-items:flex-end}
+.ck-banner{background:#fff;width:100%;padding:18px 16px 22px;border-radius:18px 18px 0 0;display:grid;gap:10px}
+.ck-banner p{margin:0;font-size:13px;color:#444}
+.ck-accept{background:#16a34a;color:#fff;border:0;border-radius:12px;padding:15px;font-weight:800;font-size:16px;cursor:pointer}
+.ck-link{background:none;border:0;color:#c3c7ce;font-size:11px;cursor:pointer;padding:4px;justify-self:center}
+.ck-panel{position:absolute;inset:0;background:#fff;display:flex;flex-direction:column}
+.ck-panel h4{margin:0;padding:16px;border-bottom:1px solid #eee;font-size:16px}
+.ck-list{flex:1;overflow:auto;padding:4px 16px}
+.ck-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 0;border-bottom:1px solid #f0f0f0;font-size:14px}
+.ck-row small{display:block;color:#888;font-size:11px}
+.ck-more{background:none;border:0;color:#1a4fd6;cursor:pointer;font-weight:700;padding:0;font-size:14px;text-align:left}
+.tg{width:46px;height:26px;border-radius:99px;border:0;background:#cfd3da;position:relative;cursor:pointer;flex:0 0 46px}
+.tg span{position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:left .15s}
+.tg.on{background:#16a34a} .tg.on span{left:23px}
+.tg.locked{opacity:.5;cursor:not-allowed}
+.ck-foot{padding:12px 16px 16px;display:grid;gap:8px;border-top:1px solid #eee}
+.ck-save{background:#fff;border:1px solid #e3e5e9;color:#b0b5bd;border-radius:10px;padding:10px;font-size:12px;cursor:pointer}
+.ck-msg{font-size:12px;color:#b45309;margin:0}
+/* Escape: StreamBox */
+.sbx{background:#111318;color:#f2f2f2;min-height:640px}
+.sbx .sb-top{display:flex;justify-content:space-between;align-items:center;padding:14px 16px}
+.sbx .sb-logo{color:#ff3b3b;font-weight:900;font-size:20px}
+.sbx .sb-av{width:34px;height:34px;border-radius:8px;background:#3b82f6;border:0;cursor:pointer;color:#fff;font-weight:800}
+.sbx .sb-hero{margin:4px 16px;height:170px;border-radius:14px;background:linear-gradient(135deg,#7c3aed,#ef4444);display:flex;flex-direction:column;justify-content:flex-end;padding:14px}
+.sbx .sb-play{background:#fff;color:#111;border:0;border-radius:8px;padding:10px;font-weight:800;margin-top:8px;cursor:pointer}
+.sbx .sb-h{padding:16px 16px 6px;font-weight:700}
+.sbx .sb-tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 16px}
+.sbx .sb-tiles button{height:90px;border-radius:8px;border:0;cursor:pointer;color:#fff;font-weight:700;font-size:12px}
+.sbx .sb-list{display:grid;padding:6px 16px}
+.sbx .sb-item{background:none;border:0;border-bottom:1px solid #262a33;color:#e8e8e8;text-align:left;padding:14px 4px;cursor:pointer;font-size:15px}
+.sbx .sb-up{background:linear-gradient(90deg,#f59e0b,#ef4444);border:0;border-radius:12px;color:#fff;font-weight:800;padding:16px;margin:6px 0 10px;cursor:pointer;font-size:16px}
+.sbx .sb-tiny{background:none;border:0;color:#4b5060;font-size:10px;cursor:pointer;padding:24px 4px 10px;text-align:left}
+.sbx .sb-center{padding:30px 20px;display:grid;gap:12px;text-align:center}
+.sbx .sb-center h4{font-size:20px;margin:0}
+.sbx .sb-big{background:#ff3b3b;color:#fff;border:0;border-radius:12px;padding:15px;font-weight:800;font-size:16px;cursor:pointer}
+.sbx .sb-small{background:none;border:0;color:#6b7080;font-size:11px;cursor:pointer;padding:6px}
+.sbx .sb-radio{display:flex;gap:10px;align-items:center;background:#1c1f27;border:1px solid #2c3140;border-radius:10px;padding:12px;cursor:pointer;color:#eee;text-align:left}
+.sbx .sb-radio.sel{border-color:#ff3b3b}
+.sbx .sb-radio i{width:16px;height:16px;border-radius:50%;border:2px solid #888;flex:0 0 16px}
+.sbx .sb-radio.sel i{background:#ff3b3b;border-color:#ff3b3b}
+.sbx .sb-confirm{background:#2a2e38;color:#ddd;border:0;border-radius:10px;padding:12px;cursor:pointer;font-weight:700}
+.sbx .sb-confirm:disabled{opacity:.4;cursor:not-allowed}
+/* Escape: Blabla */
+.bla{background:#eef5ef;min-height:640px;position:relative}
+.bla .bl-top{background:#1f9d55;color:#fff;padding:14px 16px;font-weight:800}
+.bla .bl-chat{padding:10px 16px;display:grid;gap:10px;filter:blur(2px)}
+.bla .bl-chat div{background:#fff;border-radius:12px;padding:12px}
+.bl-modal{position:absolute;inset:0;background:rgba(0,0,0,.4);display:grid;place-items:center;padding:20px}
+.bl-box{background:#fff;border-radius:16px;padding:20px;display:grid;gap:10px;text-align:center}
+.bl-box h4{margin:0;font-size:17px}
+.bl-box p{margin:0;font-size:13px;color:#444;text-align:left}
+.bl-box ul{text-align:left;font-size:13px;color:#333;padding-left:18px;margin:0}
+.bl-agree{background:#1f9d55;color:#fff;border:0;border-radius:12px;padding:14px;font-weight:800;cursor:pointer;font-size:15px}
+.bl-no{background:#fff;color:#555;border:1px solid #ccc;border-radius:12px;padding:10px;cursor:pointer}
+.bl-link{background:none;border:0;color:#1f6f45;text-decoration:underline;cursor:pointer;font-size:13px}
+
+@media (max-width:820px){
+  .hero{grid-template-columns:1fr}
+  .game{grid-template-columns:1fr}
+  .side{position:static}
+}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="top-in">
+    <button class="brand" data-go="hub" aria-label="Zur Übersicht"><span>Durchschaut!</span></button>
+    <nav class="nav" aria-label="Hauptnavigation">
+      <button class="nav-main" data-go="hub" data-nav>Stationen</button>
+      <button data-go="album" data-nav>Sammelalbum</button>
+      <button data-go="badges" data-nav>Abzeichen</button>
+      <button data-go="save" data-nav>Mein Fortschritt</button>
+    </nav>
+    <div class="stats">
+      <span class="stat pts" id="pts" aria-live="polite">⭐ 0</span>
+      <button class="stat" id="themeBtn" title="Hell oder dunkel">🌙 Dunkel</button>
+      <button class="stat" id="lvlBtn" title="Niveau wechseln">Niveau</button>
+    </div>
+  </div>
+</header>
+<main id="main" tabindex="-1"></main>
+<footer>
+  <div class="wrap">
+    Systematik und Begriffe der 20 Dark Patterns: <a href="https://da-pa.ch" target="_blank" rel="noopener">da-pa.ch</a> der Stiftung für Konsumentenschutz. Alle Apps in diesem Spiel sind erfunden, echte Beispiele findest du in der <a href="https://da-pa.ch/hall-of-shame/" target="_blank" rel="noopener">Hall of Shame</a>. Dein Fortschritt wird nur in diesem Browser gespeichert.
+    <div class="row"><button class="linkbtn" data-go="imprint">Impressum &amp; Datenschutz</button><button class="linkbtn" data-go="teach">Für Lehrpersonen</button><button class="linkbtn" data-go="save">Mein Fortschritt</button><span>Lizenz: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a>, Sabrina Meier, PHTG</span></div>
+  </div>
+</footer>
+<div class="sheet" id="sheet" hidden><div class="sheet-card" role="dialog" aria-modal="true" aria-labelledby="sheetTitle" id="sheetCard"></div></div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+
+<script>
+/* ============ Daten ============ */
+const CATS = {
+  druck:{name:'Druckausübung', d:'Du sollst dich beeilen oder schlecht fühlen.'},
+  ersch:{name:'Erschleichung', d:'Dir wird heimlich etwas untergejubelt.'},
+  hind:{name:'Hindernisse', d:'Der Weg zu deiner Wahl wird extra schwer gemacht.'},
+  irre:{name:'Irreführung', d:'Du wirst getäuscht, damit du das Falsche anklickst.'},
+  zwang:{name:'Operativer Zwang', d:'Du hast gar keine echte Wahl.'}
+};
+const B='https://da-pa.ch/dapa/';
+const PATTERNS = [
+ {id:'countdown',cat:'druck',de:'Herunterzählen',en:'Countdown',url:B+'herunterzahlen-countdowns/',
+  n1:'Eine Uhr zählt runter, damit du schnell kaufst. Oft startet sie danach einfach wieder von vorne.',
+  n2:'Ein Timer erzeugt künstlichen Zeitdruck. Häufig gilt das Angebot nach Ablauf genauso weiter, oder die Uhr startet neu.',
+  tip:'Lade die Seite neu oder schau morgen nochmals. Ein echtes Angebot rennt nicht davon.'},
+ {id:'scarcity',cat:'druck',de:'Knappheit',en:'Scarcity',url:B+'knappheit-scarcity/',
+  n1:'«Nur noch 2 Stück!» Du sollst Angst bekommen, etwas zu verpassen.',
+  n2:'Hinweise auf knappe Bestände spielen mit der Angst, etwas zu verpassen. Ob die Zahl stimmt, kannst du nicht überprüfen.',
+  tip:'Frag dich: Würde ich es auch kaufen, wenn noch 100 Stück da wären?'},
+ {id:'socialproof',cat:'druck',de:'Soziale Bestätigung',en:'Social Proof',url:B+'soziale-bestatigung-social-proof/',
+  n1:'«37 Leute schauen das gerade an.» Du sollst denken: Wenn alle das wollen, will ich es auch.',
+  n2:'Meldungen über das Verhalten anderer nutzen aus, dass wir uns an der Gruppe orientieren. Die Zahlen sind oft nicht nachprüfbar.',
+  tip:'Was andere angeblich tun, ist kein Grund. Entscheide nach dem, was du brauchst.'},
+ {id:'confirmshaming',cat:'druck',de:'Schuldzuweisung',en:'Confirmshaming',url:B+'schuldzuweisung-confirmshaming/',
+  n1:'Der Nein-Knopf ist so geschrieben, dass du dich schlecht fühlst. Zum Beispiel: «Nein, ich bleibe lieber schwach.»',
+  n2:'Die Ablehnen-Option wird mit Scham oder Schuldgefühlen verknüpft, damit Nein sagen unangenehm wird.',
+  tip:'Lies den Satz laut vor und lach darüber. Dann klick ruhig Nein.'},
+ {id:'nagging',cat:'druck',de:'Nörgeln',en:'Nagging',url:B+'norgeln-nagging/',
+  n1:'Eine App fragt immer und immer wieder dasselbe, bis du genervt Ja sagst.',
+  n2:'Wiederholte Aufforderungen unterbrechen dich so lange, bis du nachgibst. Oft fehlt eine Option «Nie mehr fragen».',
+  tip:'Schau, ob du die Nachfragen in den Einstellungen abstellen kannst.'},
+ {id:'sneaking',cat:'ersch',de:'Vorbeischleichen',en:'Sneaking',url:B+'vorbeischleichen-sneaking/',
+  n1:'Im Warenkorb liegt plötzlich etwas, das du gar nicht ausgewählt hast.',
+  n2:'Zusätzliche Produkte oder Leistungen landen unbemerkt im Warenkorb, oft kurz vor dem Bezahlen.',
+  tip:'Kontrolliere vor dem Bezahlen jede Zeile im Warenkorb.'},
+ {id:'hiddencost',cat:'ersch',de:'Versteckte Kosten',en:'Hidden Cost',url:B+'versteckte-kosten-hidden-cost/',
+  n1:'Erst ganz am Schluss tauchen Gebühren auf. Plötzlich ist alles teurer.',
+  n2:'Zusätzliche Gebühren erscheinen erst im letzten Schritt, wenn du schon viel Zeit investiert hast.',
+  tip:'Vergleiche den Endpreis mit dem Preis, den du am Anfang gesehen hast.'},
+ {id:'hiddensub',cat:'ersch',de:'Verstecktes Abonnement',en:'Hidden Subscription',url:B+'verstecktes-abonnement-hidden-subscription/',
+  n1:'Du denkst, du kaufst etwas nur einmal. In Wahrheit bezahlst du jede Woche oder jeden Monat.',
+  n2:'Was wie ein einmaliger Kauf aussieht, ist in Wahrheit ein Abonnement. Der Hinweis steht oft klein oder versteckt.',
+  tip:'Such nach Wörtern wie «Abo», «pro Woche» oder «pro Monat», auch im Kleingedruckten.'},
+ {id:'preselection',cat:'hind',de:'Vorauswahl',en:'Preselection',url:B+'vorauswahl-preselection/',
+  n1:'Ein Häkchen ist schon gesetzt. Wenn du es übersiehst, bezahlst du etwas mit.',
+  n2:'Eine Option ist vorausgewählt und wird übernommen, wenn du sie nicht aktiv abwählst. Oft sind das Versicherungen oder Spenden.',
+  tip:'Schau jedes Häkchen an, bevor du auf Weiter drückst.'},
+ {id:'comparison',cat:'hind',de:'Vergleichs-Verhinderung',en:'Comparison Prevention',url:B+'vergleichs-verhinderung-comparison-prevention/',
+  n1:'Die Preise sind so angegeben, dass du sie kaum vergleichen kannst. Einmal pro Woche, einmal pro Jahr.',
+  n2:'Preise stehen in unterschiedlichen Einheiten oder Zeiträumen, damit ein Vergleich schwierig wird.',
+  tip:'Rechne alles auf dieselbe Einheit um, zum Beispiel auf ein Jahr.'},
+ {id:'roach',cat:'hind',de:'Kakerlakenfalle',en:'Roach Motel',url:B+'kakerlakenfalle-roach-motel/',
+  n1:'Rein geht es mit einem Klick, raus nur mit ganz viel Mühe. Wie bei einer Falle.',
+  n2:'Anmelden ist ganz einfach, Kündigen wird absichtlich lang und kompliziert gemacht.',
+  tip:'Schau schon vor dem Anmelden nach, wie man wieder kündigt.'},
+ {id:'clickfatigue',cat:'hind',de:'Klick-Müdigkeit',en:'Click Fatigue',url:B+'klick-mudigkeit-click-fatigue/',
+  n1:'Für das, was du willst, brauchst du ganz viele Klicks. Irgendwann gibst du auf.',
+  n2:'Die gewünschte Option braucht viele Schritte, die unerwünschte nur einen. Die Ermüdung ist eingeplant.',
+  tip:'Nimm dir Zeit. Jeder Klick zum Ablehnen lohnt sich.'},
+ {id:'visual',cat:'hind',de:'Visuelle Störung',en:'Visual Interference',url:B+'visuelle-storung-visual-interference/',
+  n1:'Der Knopf, den du suchst, ist winzig, blass oder versteckt. Der andere leuchtet gross und bunt.',
+  n2:'Farbe, Grösse und Platzierung lenken dich auf die Option, die der Anbieter will. Die andere wird unauffällig gemacht.',
+  tip:'Such bewusst nach dem kleinen, grauen Knopf. Oft ist er der richtige für dich.'},
+ {id:'bait',cat:'irre',de:'Lockvogel-Taktik',en:'Bait and Switch',url:B+'lockvogel-taktik-bait-and-switch/',
+  n1:'Ein Knopf macht etwas anderes, als du erwartest. Du drückst «Vorschau» und hast schon gekauft.',
+  n2:'Eine Schaltfläche löst nicht die erwartete Aktion aus. Du willst das eine tun, ausgeführt wird etwas anderes.',
+  tip:'Lies Knöpfe genau, bevor du tippst, besonders wenn Geld im Spiel ist.'},
+ {id:'misdirection',cat:'irre',de:'Fehlleitung',en:'Misdirection',url:B+'fehlleitung-misdirection/',
+  n1:'Etwas Lautes und Buntes lenkt dich ab, damit du das Wichtige übersiehst.',
+  n2:'Die Aufmerksamkeit wird gezielt auf etwas Auffälliges gelenkt, damit wichtige Informationen untergehen.',
+  tip:'Wenn etwas besonders laut blinkt, lies gerade das Kleingedruckte daneben.'},
+ {id:'disguised',cat:'irre',de:'Getarnte Werbung',en:'Disguised Ads',url:B+'getarnte-werbung-disguised-ads/',
+  n1:'Werbung sieht aus wie ein normaler Inhalt oder ein normaler Knopf.',
+  n2:'Werbung wird als Inhalt, Suchergebnis oder Bedienelement getarnt und ist kaum als Werbung erkennbar.',
+  tip:'Such nach kleinen Wörtern wie «Anzeige», «Werbung» oder «Gesponsert».'},
+ {id:'trickwording',cat:'irre',de:'Täuschende Formulierung',en:'Trick Wording',url:B+'tauschende-formulierung-trick-wording/',
+  n1:'Der Text ist so verwirrend, dass du das Falsche ankreuzt. Zum Beispiel mit doppeltem Nein.',
+  n2:'Mehrdeutige Formulierungen, etwa doppelte Verneinungen, verleiten dazu, das Gegenteil von dem zu wählen, was man will.',
+  tip:'Lies den Satz zweimal. Frag dich: Was passiert, wenn ich hier ankreuze?'},
+ {id:'forcedaction',cat:'zwang',de:'Erzwungene Handlung',en:'Forced Action',url:B+'erzwungene-handlung-forced-action/',
+  n1:'Du musst etwas tun, das du gar nicht willst, zum Beispiel deine Kontakte freigeben. Sonst geht es nicht weiter.',
+  n2:'Um ein Ziel zu erreichen, wird eine zusätzliche, eigentlich unnötige Handlung verlangt, etwa Registrierung oder Datenfreigabe.',
+  tip:'Frag dich, ob die App das wirklich braucht. Oft gibt es einen anderen Weg oder eine andere App.'},
+ {id:'continuity',cat:'zwang',de:'Erzwungene Weiterführung',en:'Forced Continuity',url:B+'erzwungene-weiterfuhrung-forced-continuity/',
+  n1:'Das Gratis-Testabo wird automatisch zum bezahlten Abo. Niemand fragt dich nochmals.',
+  n2:'Nach einer Gratis-Testphase wird ohne erneute Nachfrage automatisch kostenpflichtig verlängert.',
+  tip:'Trag dir das Ende der Testphase in den Kalender ein oder kündige gleich nach dem Start.'},
+ {id:'forcedreview',cat:'zwang',de:'Erzwungene Überprüfung',en:'Forced Review',url:B+'erzwungene-uberprufung-forced-review/',
+  n1:'Neue Regeln tauchen auf. Entweder sagst du Ja, oder du darfst die App nicht mehr benutzen.',
+  n2:'Ein Dienst lässt sich nur weiter nutzen, wenn neue Bedingungen wie AGB oder Datenschutzregeln akzeptiert werden.',
+  tip:'Lies wenigstens die Zusammenfassung und sprich darüber, bevor du zustimmst.'}
+];
+const P = Object.fromEntries(PATTERNS.map(p=>[p.id,p]));
+
+const SORTCARDS = {
+ countdown:'Im Online-Shop blinkt: «Noch 09:59 Minuten, dann ist der Rabatt weg!» Am nächsten Tag läuft dieselbe Uhr wieder.',
+ scarcity:'Bei einer Hotelbuchung steht in Rot: «Nur noch 1 Zimmer frei!»',
+ socialproof:'Unten links erscheint: «Lena aus Bern hat das vor 2 Minuten gekauft.»',
+ confirmshaming:'Ein Newsletter-Fenster bietet zwei Knöpfe: «Anmelden» oder «Nein danke, ich mag keine Rabatte».',
+ nagging:'Eine Game-App fragt bei jedem Start: «Benachrichtigungen erlauben?» Es gibt nur «Ja» und «Später».',
+ sneaking:'Du bestellst Kopfhörer. Im Warenkorb liegt plötzlich noch eine Garantieverlängerung für CHF 19.–.',
+ hiddencost:'Das Konzertticket kostet CHF 49.–. Beim Bezahlen sind es plötzlich CHF 63.50.',
+ hiddensub:'«Hintergrundbild-Paket für CHF 1.–» Erst auf der Abrechnung siehst du: CHF 1.– jede Woche.',
+ preselection:'Bei der Flugbuchung ist «Reiseversicherung CHF 24.–» bereits angehakt.',
+ comparison:'Abo A kostet CHF 3.– pro Woche, Abo B CHF 99.– pro Jahr, Abo C CHF 12.– pro Monat.',
+ roach:'Anmelden geht in der App mit einem Klick. Kündigen nur per eingeschriebenem Brief.',
+ clickfatigue:'Um Werbe-Cookies abzulehnen, musst du 14 Schalter einzeln ausschalten.',
+ visual:'«Zustimmen» ist ein grosser grüner Knopf. «Ablehnen» ist hellgrau auf Weiss und kaum lesbar.',
+ bait:'Du tippst auf das X, um eine Werbung zu schliessen. Stattdessen öffnet sich der App-Store.',
+ misdirection:'Ein riesiges «GRATIS-GESCHENK!» springt ins Auge. Klein darunter steht, dass du gleichzeitig ein Jahresabo abschliesst.',
+ disguised:'Auf einer Download-Seite gibt es vier grosse grüne «Download»-Knöpfe. Nur einer lädt das richtige Programm.',
+ trickwording:'Neben einem Kästchen steht: «Nicht ankreuzen, falls du keine Werbung nicht erhalten möchtest.»',
+ forcedaction:'Du willst ein Rezept lesen. Vorher musst du ein Konto mit deiner Handynummer erstellen.',
+ continuity:'Der Musikdienst ist 30 Tage gratis. Danach werden ohne Nachfrage CHF 12.95 pro Monat abgebucht.',
+ forcedreview:'Deine Chat-App zeigt: «Neue Nutzungsbedingungen. Akzeptiere, um weiterzuchatten.» Einen anderen Knopf gibt es nicht.'
+};
+
+const SHOE = '<svg viewBox="0 0 200 105" aria-hidden="true"><path d="M18 72 Q26 42 66 46 L108 28 Q121 25 127 38 L141 60 Q181 61 186 80 L186 90 L18 90 Z" fill="#ff3d7f"/><rect x="16" y="88" width="172" height="11" rx="5" fill="#222"/><path d="M74 52 L96 44 M80 61 L104 52" stroke="#fff" stroke-width="4" stroke-linecap="round"/></svg>';
+
+const SCENES = [
+ {title:'Sneaker-Shop', intro:'Du willst nur schauen, was die neuen Sneakers kosten.',
+  tricks:{timer:'countdown',scarce:'scarcity',watch:'socialproof',ad:'disguised'},
+  hints:{timer:'Beobachte die Uhr eine Weile.',scarce:'Wie viele Paar gibt es angeblich noch?',watch:'Wer schaut da alles mit?',ad:'Ist bei «Das könnte dir auch gefallen» wirklich alles ein Schuh?'},
+  harmless:{logo:'Das ist einfach das Logo des Shops.',img:'Ein Produktbild ist ganz normal.',size:'Eine Grösse auswählen ist ein normaler Schritt.',cart:'Ein Warenkorb-Knopf ist okay, solange klar ist, was passiert.',prod2:'Ein ähnliches Produkt vorschlagen ist kein Trick.'},
+  html:`<div class="app kick">
+   <div class="k-bar"><button class="hs k-logo" data-hs="logo">KICKZ</button><span aria-hidden="true">🛒</span></div>
+   <button class="hs k-img" data-hs="img" aria-label="Produktbild">${SHOE}</button>
+   <div class="k-pad">
+    <h3 class="k-name">AirFlow 3 Neon</h3>
+    <div class="k-price">CHF 89.–</div>
+    <button class="hs k-timer" data-hs="timer">⏰ Deal endet in <b class="k-t">00:15</b></button>
+    <button class="hs k-scarce" data-hs="scarce">🔥 Nur noch 2 Paar in deiner Grösse!</button>
+    <button class="hs k-watch" data-hs="watch">👀 <b class="k-w">37</b> Personen schauen sich das gerade an</button>
+    <button class="hs k-size" data-hs="size">Grösse: 38 ▾</button>
+    <button class="hs k-cta" data-hs="cart">In den Warenkorb</button>
+    <div class="k-more">Das könnte dir auch gefallen</div>
+    <div class="k-grid">
+     <button class="hs k-tile" data-hs="prod2"><span class="k-ti">👟</span>RunLite 2<br><b>CHF 69.–</b></button>
+     <button class="hs k-tile" data-hs="ad"><span class="k-ti">🐉</span>Dragon Clash<br><b>Gratis</b><span class="k-anz">Anzeige</span></button>
+    </div>
+   </div></div>`,
+  init(screen){
+    let t=15; const el=screen.querySelector('.k-t'), w=screen.querySelector('.k-w');
+    timers.push(setInterval(()=>{t=t<=0?15:t-1; el.textContent='00:'+String(t).padStart(2,'0');},1000));
+    timers.push(setInterval(()=>{w.textContent=30+Math.floor(Math.random()*15);},2500));
+  }},
+ {title:'Game-Shop', intro:'Du spielst «Pixel Arena» und öffnest den Shop.',
+  tricks:{nag:'nagging',bait:'bait',packs:'comparison',shame:'confirmshaming'},
+  hints:{nag:'Wie oft hat dich die App heute schon daran erinnert?',bait:'Was passiert wirklich, wenn du die Rüstung nur anschauen willst?',packs:'Versuch mal, die drei Gem-Preise zu vergleichen.',shame:'Lies den kleinen Nein-Knopf genau.'},
+  harmless:{level:'Dein Level anzuzeigen ist ganz normal.',gems:'Dein Kontostand. Den zu zeigen ist fair.',yes:'Ein Kaufknopf allein ist noch kein Trick. Schau dir mal den Knopf darunter an.',settings:'Einstellungen sind kein Trick.'},
+  html:`<div class="app pix">
+   <div class="px-bar"><button class="hs px-lv" data-hs="level">Lv 12 <span class="px-xp"><i></i></span></button><button class="hs px-gems" data-hs="gems">💎 <span class="px-g">320</span></button></div>
+   <button class="hs px-nag" data-hs="nag">🔔 Erinnerung (3. Mal heute): Dein Starter-Paket wartet noch auf dich!</button>
+   <div class="px-h">Skins</div>
+   <div class="px-skin"><div class="px-skinimg" aria-hidden="true">🐲</div><div><b>Drachenrüstung</b><br><small>300 💎</small></div><button class="hs px-bait" data-hs="bait"><span class="lbl">👁 Vorschau</span></button></div>
+   <div class="px-h">Gems kaufen</div>
+   <button class="hs px-packs" data-hs="packs"><span><b>80 💎</b> CHF 0.99 pro Woche</span><span><b>500 💎</b> CHF 4.50</span><span><b>2000 💎</b> CHF 39.– pro Jahr <em>BESTER WERT</em></span></button>
+   <div class="px-offer"><b>Starter-Paket</b><p>5 Truhen + 200 💎 für CHF 2.–</p>
+    <button class="hs px-yes" data-hs="yes">Ja, her damit!</button>
+    <button class="hs px-no" data-hs="shame">Nein danke, ich bleibe lieber schwach</button></div>
+   <button class="hs px-set" data-hs="settings">⚙ Einstellungen</button>
+  </div>`,
+  onTap(id,screen){ if(id==='bait'){screen.querySelector('.px-bait .lbl').textContent='✔ Gekauft! −300 💎'; screen.querySelector('.px-g').textContent='20';} }},
+ {title:'Foto-App', intro:'Du willst ein Foto mit einem Filter verschönern und teilen.',
+  tricks:{hiddensub:'hiddensub',trial:'continuity',contacts:'forcedaction',news:'trickwording'},
+  hints:{hiddensub:'Lies beim Glitzer-Filter das Kleingedruckte.',trial:'Was passiert nach den 3 Gratis-Tagen?',contacts:'Braucht eine Foto-App wirklich alle deine Kontakte?',news:'Lies den Satz beim Kästchen zweimal.'},
+  harmless:{logo:'Das ist das Logo der App.',filters:'Filter auswählen ist genau das, wofür die App da ist.',shoot:'Ein Foto aufnehmen ist der normale Zweck der App.'},
+  html:`<div class="app pop">
+   <div class="pp-bar"><button class="hs pp-logo" data-hs="logo">PhotoPop</button></div>
+   <div class="pp-photo" aria-hidden="true">🌄</div>
+   <button class="hs pp-filters" data-hs="filters"><span>Original</span><span>Sonne</span><span>Retro</span><span>S/W</span></button>
+   <button class="hs pp-card" data-hs="hiddensub"><b>✨ Glitzer-Filter freischalten</b><span class="pp-price">nur CHF 2.90</span><small class="pp-fine">Abo, wird wöchentlich verrechnet</small></button>
+   <button class="hs pp-card pp-pro" data-hs="trial"><b>PRO 3 Tage gratis testen</b><small class="pp-fine">Danach CHF 9.90 pro Monat. Verlängert sich automatisch.</small></button>
+   <button class="hs pp-perm" data-hs="contacts"><b>📇 Kontakte erforderlich</b><span>Um Fotos zu teilen, braucht PhotoPop Zugriff auf alle deine Kontakte.</span><span class="pp-allow">Erlauben</span></button>
+   <button class="hs pp-check" data-hs="news"><span class="pp-box"></span><span>Ich möchte keine Angebote nicht verpassen.</span></button>
+   <button class="hs pp-shoot" data-hs="shoot">📷 Foto aufnehmen</button>
+  </div>`},
+ {title:'Ticket-Kasse', intro:'Du hast 1 Stehplatz für CHF 49.– ausgewählt. Jetzt kommt die Kasse.',
+  tricks:{insurance:'sneaking',fees:'hiddencost',co2:'preselection',misdir:'misdirection'},
+  hints:{insurance:'Hast du wirklich alles im Warenkorb selbst ausgewählt?',fees:'Diese Zeilen hast du vorher nirgends gesehen.',co2:'Wer hat dieses Häkchen gesetzt?',misdir:'Was steht ganz klein unter dem grossen gelben Feld?'},
+  harmless:{event:'Name und Datum des Konzerts gehören auf jedes Ticket.',ticket:'Das ist dein Stehplatz. Den hast du ausgewählt.',total:'Ein Total anzuzeigen ist richtig. Vergleich es aber mal mit CHF 49.–!',pay:'Der Bezahlknopf ist klar beschriftet.'},
+  html:`<div class="app tix">
+   <div class="tx-bar">TicketFix <span>Schritt 3 von 3: Bezahlen</span></div>
+   <button class="hs tx-event" data-hs="event"><b>Open Air Seebühne</b><span>Samstag, 12. Juli, 19 Uhr</span></button>
+   <div class="tx-list">
+    <button class="hs tx-row" data-hs="ticket"><span>1× Stehplatz</span><span>49.00</span></button>
+    <button class="hs tx-row" data-hs="insurance"><span>1× Ticket-Versicherung</span><span>6.90</span></button>
+    <button class="hs tx-row tx-fees" data-hs="fees"><span>Servicegebühr<br>Bearbeitungsgebühr</span><span>8.50<br>3.00</span></button>
+    <button class="hs tx-row" data-hs="co2"><span><span class="tx-box">✓</span>Klimaspende</span><span>2.00</span></button>
+    <button class="hs tx-row tx-total" data-hs="total"><span>Total CHF</span><span>69.40</span></button>
+   </div>
+   <button class="hs tx-promo" data-hs="misdir"><span class="tx-gift">🎁 GRATIS-POSTER SICHERN! 🎁</span><span class="tx-small">Mit dem Kauf erlaubst du, dass wir deine Daten an Werbepartner weitergeben.</span></button>
+   <button class="hs tx-pay" data-hs="pay">Jetzt bezahlen</button>
+  </div>`}
+,
+ {title:'Essen bestellen', intro:'Du bestellst dir einen Burger für CHF 14.50 nach Hause.',
+  tricks:{rush:'scarcity',plus:'continuity',tip:'preselection',fees:'hiddencost'},
+  hints:{rush:'Wie viele Kurier:innen sind angeblich noch frei?',plus:'Was passiert nach dem Gratis-Monat?',tip:'Wer hat das Trinkgeld ausgewählt?',fees:'Schau dir die kleinen grauen Zeilen über dem Total an.'},
+  harmless:{logo:'Das ist das Logo der App.',item:'Das ist dein Burger. Den hast du bestellt.',addr:'Eine Lieferadresse braucht es wirklich.',order:'Der Bestellknopf ist klar beschriftet.'},
+  html:`<div class="app food">
+   <div class="fd-bar"><button class="hs fd-logo" data-hs="logo">🛵 Futterflitzer</button></div>
+   <button class="hs fd-rush" data-hs="rush">⚡ Hohe Nachfrage! Nur noch 2 Kurier:innen in deiner Nähe frei.</button>
+   <div class="fd-sec">Deine Bestellung</div>
+   <button class="hs fd-row" data-hs="item"><span>🍔 Classic Burger</span><span>14.50</span></button>
+   <button class="hs fd-addr" data-hs="addr">📍 Lieferung an: Bahnhofstrasse 12</button>
+   <button class="hs fd-plus" data-hs="plus"><b>FlitzerPlus: 1 Monat gratis liefern!</b><small>Danach CHF 7.90 pro Monat, verlängert sich automatisch.</small><span class="fd-plusbtn">Gratis aktivieren</span></button>
+   <div class="fd-sec">Trinkgeld für die Fahrerin</div>
+   <button class="hs fd-tips" data-hs="tip"><span>0 %</span><span>5 %</span><span>10 %</span><span class="sel">15 %</span></button>
+   <div class="fd-sum">
+    <div class="fd-line"><span>Zwischensumme</span><span>14.50</span></div>
+    <button class="hs fd-fees" data-hs="fees"><span>Servicegebühr<br>Kleinmengenzuschlag<br>Liefergebühr</span><span>2.90<br>3.00<br>4.90</span></button>
+    <div class="fd-line"><span>Trinkgeld</span><span>2.20</span></div>
+    <div class="fd-line fd-tot"><span>Total CHF</span><span>27.50</span></div>
+   </div>
+   <button class="hs fd-order" data-hs="order">Jetzt bestellen</button>
+  </div>`},
+ {title:'Social-Media-App (Kombi)', intro:'Du öffnest «Flicky», um kurz die Nachricht deiner Freundin Mia zu lesen. Achtung: In manchen Stellen stecken gleich mehrere Tricks!',
+  goal:'Finde die 4 verdächtigen Stellen.',
+  tricks:{streak:['countdown','socialproof','nagging'],ad:['disguised','bait'],gold:['continuity','confirmshaming'],privacy:['preselection','trickwording']},
+  hints:{streak:'Wie viele Arten, dich unter Druck zu setzen, stecken in diesem Banner?',ad:'Ist das wirklich ein Video von jemandem, dem du folgst? Und was macht der Knopf?',gold:'Was kostet Gold nach der ersten Woche? Und lies den Nein-Knopf genau.',privacy:'Wer hat diese Häkchen gesetzt? Und was bedeutet der erste Satz genau?'},
+  harmless:{logo:'Das ist einfach das Logo der App.',msg:'Das ist Mias Nachricht. Genau deswegen bist du hier.',nav:'Die Navigation unten ist ganz normal.'},
+  html:`<div class="app flk">
+   <div class="fl-bar"><button class="hs fl-logo" data-hs="logo">flicky</button><span aria-hidden="true">🔔 💬</span></div>
+   <button class="hs fl-streak" data-hs="streak"><b>🔥 Deine 41-Tage-Streak mit Mia endet in <span class="fl-t">02:13:45</span>!</b><span>👥 37 deiner Freund:innen sind gerade online</span><small>4. Erinnerung heute</small></button>
+   <button class="hs fl-msg" data-hs="msg"><span class="fl-av">M</span><span><b>Mia</b><br>Hast du das Video vom Ausflug gesehen? 😂</span></button>
+   <button class="hs fl-post" data-hs="ad"><span class="fl-who"><span class="fl-av" style="background:#f472b6">L</span><b>lina.styles</b><small>Gesponsert</small></span><span class="fl-vid">🎧</span><span class="fl-cap">Die Kopfhörer, die gerade ALLE haben 😍</span><span class="fl-cta">▶ Video ansehen</span></button>
+   <button class="hs fl-gold" data-hs="gold"><b>✨ Flicky Gold</b><span>Sieh, wer dein Profil besucht hat! Erste Woche nur CHF 1.–</span><small>Danach CHF 9.90 pro Monat, verlängert sich automatisch.</small><span class="fl-goldbtn">Gold holen</span><span class="fl-no">Nein, ich bleibe lieber unsichtbar</span></button>
+   <button class="hs fl-priv" data-hs="privacy"><b>Privatsphäre-Check ✓ erledigt</b><span><span class="fl-box">✓</span>Profil nicht vor Fremden verbergen</span><span><span class="fl-box">✓</span>Standort mit Freund:innen teilen</span></button>
+   <button class="hs fl-nav" data-hs="nav"><span>🏠</span><span>🔍</span><span>➕</span><span>💬</span><span>👤</span></button>
+  </div>`,
+  init(screen){let t=2*3600+13*60+45;const el=screen.querySelector('.fl-t');timers.push(setInterval(()=>{t--;const h=Math.floor(t/3600),m=Math.floor(t%3600/60),x=t%60;el.textContent=[h,m,x].map(v=>String(v).padStart(2,'0')).join(':');},1000));},
+  onTap(id,screen){if(id==='ad')screen.querySelector('.fl-cta').textContent='🛒 In den Warenkorb gelegt!';}}
+];
+
+const BADGES = [
+ {id:'druck',ic:'⏳',name:'Kein Stress!',desc:'Alle 5 Tricks der Kategorie Druckausübung entdeckt.'},
+ {id:'ersch',ic:'🕵️',name:'Nichts untergejubelt',desc:'Alle 3 Tricks der Kategorie Erschleichung entdeckt.'},
+ {id:'hind',ic:'🧗',name:'Hindernislauf',desc:'Alle 5 Tricks der Kategorie Hindernisse entdeckt.'},
+ {id:'irre',ic:'🔍',name:'Nicht reingelegt',desc:'Alle 4 Tricks der Kategorie Irreführung entdeckt.'},
+ {id:'zwang',ic:'🗝️',name:'Echte Wahl',desc:'Alle 3 Tricks der Kategorie Operativer Zwang entdeckt.'},
+ {id:'spot',ic:'🎯',name:'Trickjäger:in',desc:'Alle 6 Apps der Trickjagd geschafft.'},
+ {id:'escape',ic:'🚪',name:'Ausbrecher:in',desc:'Alle 4 Missionen bei «Entkommen» geschafft.'},
+ {id:'sort',ic:'🗂️',name:'Sortierprofi',desc:'Beim Sortieren mindestens 8 von 10 richtig.'},
+ {id:'all',ic:'🌟',name:'Voller Durchblick',desc:'Alle 20 Tricks im Sammelalbum.'}
+];
+
+/* ============ Zustand ============ */
+const KEY='durchschaut-v1';
+function load(){const d={level:null,points:0,disc:[],caught:[],scenes:[],escapes:[],sortBest:0,badges:[],st:{},prog:{},escSt:{},sortRun:null};try{const r=localStorage.getItem(KEY);if(r)Object.assign(d,JSON.parse(r));}catch(e){}return d;}
+const S=load();
+function setSt(id,ok){S.st=S.st||{};S.st[id]=ok?'ok':'unsure';save();}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+const lvl=()=>S.level||1;
+const $=s=>document.querySelector(s);
+const main=$('#main');
+let timers=[];
+function clearTimers(){timers.forEach(clearInterval);timers=[];}
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const chip=c=>`<span class="chip${c==='irre'?' ink':''}" style="--cat:var(--c-${c})">${CATS[c].name}</span>`;
+const pname=p=>lvl()===2?`${p.de} <span class="en">(${p.en})</span>`:p.de;
+const pexp=p=>lvl()===1?p.n1:p.n2;
+
+function toast(msg,cls=''){const t=document.createElement('div');t.className='toast '+cls;t.textContent=msg;$('#toasts').appendChild(t);setTimeout(()=>t.remove(),cls?3200:1600);}
+function addPoints(n){if(!n)return;S.points=Math.max(0,S.points+n);save();updateHeader();toast((n>0?'+':'')+n+' Punkte');}
+function discover(id){if(!S.disc.includes(id)){S.disc.push(id);save();checkBadges();}}
+function checkBadges(){
+  const cond={
+    spot:()=>S.scenes.length>=SCENES.length,
+    escape:()=>S.escapes.length>=MISSIONS.length,
+    sort:()=>S.sortBest>=8,
+    all:()=>PATTERNS.every(p=>S.disc.includes(p.id))
+  };
+  BADGES.forEach(b=>{
+    if(S.badges.includes(b.id))return;
+    const ok=CATS[b.id]?PATTERNS.filter(p=>p.cat===b.id).every(p=>S.disc.includes(p.id)):cond[b.id]();
+    if(ok){S.badges.push(b.id);save();toast(`${b.ic} Abzeichen: ${b.name}`,'badge');}
+  });
+  updateHeader();
+}
+function updateHeader(){
+  $('#pts').textContent='⭐ '+S.points;
+  $('#lvlBtn').textContent=S.level===2?'Niveau: Profi':S.level===1?'Niveau: Einstieg':'Niveau';
+}
+
+/* ============ Sheet ============ */
+const sheet=$('#sheet'), sheetCard=$('#sheetCard');
+let sheetClose=null;
+function openSheet(html,onClick,onClose){sheetCard.innerHTML=html;sheet.hidden=false;sheet.onclick=e=>{if(e.target===sheet){closeSheet();return;}onClick&&onClick(e);};sheetClose=onClose||null;const f=sheetCard.querySelector('button');f&&f.focus();}
+function closeSheet(){if(sheet.hidden)return;sheet.hidden=true;sheetCard.innerHTML='';const c=sheetClose;sheetClose=null;c&&c();}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSheet();});
+function patternInfo(p,head=''){
+  return `${head}<div class="row">${chip(p.cat)}</div><h3 id="sheetTitle">${pname(p)}</h3><p style="margin:0">${pexp(p)}</p><div class="tip"><b>So durchschaust du es</b>${p.tip}</div>`;
+}
+
+/* ============ Routing ============ */
+const VIEWS={};
+function go(v,arg){
+  if(!S.level && !['start','teach','imprint','save'].includes(v)) v='start';
+  clearTimers();sheetClose=null;closeSheet();main.onclick=null;
+  VIEWS[v](arg);
+  window.scrollTo(0,0);main.focus({preventScroll:true});
+  document.querySelectorAll('[data-nav]').forEach(b=>b.setAttribute('aria-current',b.dataset.go===v?'page':'false'));
+}
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g&&!sheet.contains(g)){e.preventDefault();go(g.dataset.go,g.dataset.arg);}});
+$('#lvlBtn').onclick=()=>{
+  openSheet(`<h3 id="sheetTitle">Niveau wählen</h3>
+  <div class="opts"><button class="opt" data-l="1">Einstieg: einfache Sprache, Tipps und Fehlklicks kosten keine Punkte</button><button class="opt" data-l="2">Profi: Fachbegriffe, Tricks selbst benennen, Tipps und Fehlklicks kosten Punkte</button></div>`,
+  e=>{const b=e.target.closest('[data-l]');if(b){S.level=Number(b.dataset.l);save();updateHeader();closeSheet();go('hub');}});
+};
+
+/* ============ Start ============ */
+VIEWS.start=()=>{
+  main.innerHTML=`<section class="wrap hero">
+   <div>
+    <h1><span>Durchschaut!</span></h1>
+    <p class="lead">Apps und Webseiten tricksen. Mit Countdowns, versteckten Häkchen und gemeinen Nein-Knöpfen. Hier lernst du die 20 häufigsten Tricks kennen und entlarvst sie selbst.</p>
+   </div>
+   <div aria-hidden="true">
+    <div class="demo-pop"><b>Nur heute: 20 % Rabatt!</b><span class="demo-yes">Jetzt sparen</span><span class="demo-no">Nein danke, ich zahle gern zu viel</span><span class="demo-note hand">Trick!</span></div>
+   </div>
+  </section>
+  <section class="wrap pick">
+   <h2>Wie willst du spielen?</h2>
+   <div class="pick-row">
+    <button class="level-btn" data-level="1"><span class="hand">Einstieg</span><span>Einfache Sprache. Du kannst Tipps holen, ohne Punkte zu verlieren.</span></button>
+    <button class="level-btn" data-level="2"><span class="hand">Profi</span><span>Mit Fachbegriffen. Du benennst die Tricks selbst und holst Extrapunkte. Tipps und Fehlklicks kosten Punkte.</span></button>
+   </div>
+   <p class="muted">Du kannst das Niveau oben jederzeit wechseln. Lehrpersonen finden Hinweise unter <button class="linkbtn" data-go="teach">Für Lehrpersonen</button>.</p>
+  </section>`;
+  main.onclick=e=>{const b=e.target.closest('[data-level]');if(b){S.level=Number(b.dataset.level);save();updateHeader();go('hub');}};
+};
+
+/* ============ Hub ============ */
+VIEWS.hub=()=>{
+  main.innerHTML=`<section class="wrap">
+   <h1 class="h1">Wähle eine Station</h1>
+   <p class="lead">Jeder Trick, den du entlarvst, landet im Sammelalbum. Bis jetzt hast du <b>${S.disc.length} von 20</b>.</p>
+   <div class="stations">
+    <button class="note" data-go="spot"><span class="tape"></span><span class="emoji">🎯</span><span class="hand">Trickjagd</span><span>Sechs erfundene Apps. Tippe auf alles, was dich austricksen will.</span><span class="prog">${S.scenes.length} von ${SCENES.length} Apps geschafft</span></button>
+    <button class="note" data-go="escape"><span class="tape"></span><span class="emoji">🚪</span><span class="hand">Entkommen</span><span>Cookies ablehnen, ein Abo kündigen, Nein sagen. Klingt einfach?</span><span class="prog">${S.escapes.length} von ${MISSIONS.length} Missionen geschafft</span></button>
+    <button class="note" data-go="sort"><span class="tape"></span><span class="emoji">🗂️</span><span class="hand">Sortieren</span><span>Zehn Beispiele aus dem Alltag. Welcher Trick steckt dahinter?</span><span class="prog">Bestes Ergebnis: ${S.sortBest} von 10</span></button>
+    <button class="note" data-go="album"><span class="tape"></span><span class="emoji">📒</span><span class="hand">Sammelalbum</span><span>Alle 20 Tricks in fünf Kategorien zum Nachlesen.</span><span class="prog">${S.disc.length} von 20 entdeckt</span></button>
+   </div>
+  </section>`;
+};
+
+/* ============ Trickjagd ============ */
+const pidsOf=(sc,id)=>[].concat(sc.tricks[id]||[]).map(x=>P[x]);
+const tagOf=ps=>ps.map(p=>p.de).join(' + ');
+const multiInfo=(ps,head='')=>head+ps.map(p=>patternInfo(p)).join('<hr style="border:0;border-top:2px dashed var(--line);width:100%;margin:6px 0">');
+const closeRow='<div class="row"><button class="btn" data-close>Schliessen</button></div>';
+const onClose=e=>{if(e.target.closest('[data-close]'))closeSheet();};
+VIEWS.spot=(arg)=>{
+  if(arg===undefined){
+    main.innerHTML=`<section class="wrap"><div class="crumbs"><button class="linkbtn" data-go="hub">‹ Stationen</button></div>
+    <h1 class="h1">Trickjagd</h1><p class="lead">In jeder App verstecken sich 4 verdächtige Stellen. Tippe auf alles, was dir komisch vorkommt. In der letzten App stecken manchmal mehrere Tricks in einer Stelle.</p>
+    <div class="picker">${SCENES.map((s,i)=>`<button class="pick-item" data-go="spot" data-arg="${i}"><b>App ${i+1}: ${s.title}</b><span class="muted">${s.intro}</span>${S.scenes.includes(i)?'<span class="done">✔ geschafft</span>':''}</button>`).join('')}</div></section>`;
+    return;
+  }
+  const i=Number(arg), sc=SCENES[i], ids=Object.keys(sc.tricks), found=new Set();
+  main.innerHTML=`<section class="wrap"><div class="crumbs"><button class="linkbtn" data-go="spot">‹ Alle Apps</button></div>
+   <div class="game">
+    <div class="phone-wrap"><div class="phone"><div class="screen" id="scr">${sc.html}</div></div></div>
+    <aside class="side">
+     <h2>App ${i+1}: ${sc.title}</h2>
+     <div class="mission">${sc.intro} <b>${sc.goal||'Finde die 4 Tricks!'}</b></div>
+     <div class="dots" id="dots">${ids.map(()=>'<span class="dot"></span>').join('')}</div>
+     <div class="row"><button class="btn small" id="hintBtn">💡 Tipp${lvl()===2?' (−3)':''}</button><button class="btn small" id="solveBtn">🔎 Auflösen</button><button class="btn small" id="againBtn">↺ Neu starten</button></div>
+     <p class="hint" id="hint"></p>
+     <div id="after"></div>
+    </aside>
+   </div></section>`;
+  const scr=$('#scr');
+  sc.init&&sc.init(scr);
+  const refreshDots=()=>{document.querySelectorAll('#dots .dot').forEach((d,k)=>{const on=k<found.size;d.classList.toggle('on',on);d.textContent=on?'✓':'';});};
+  S.prog=S.prog||{};
+  const keep=()=>{S.prog[i]=[...found];save();};
+  const finish=(quiet)=>{
+    const first=!S.scenes.includes(i);
+    if(first){S.scenes.push(i);save();}
+    if(!quiet)stamp($('.phone-wrap'));
+    $('#hint').textContent='';
+    $('#after').innerHTML=`<div class="mission"><b>Alle verdächtigen Stellen gefunden!</b> ${first?'':'(Wiederholung)'}</div>
+     <div class="row">${i<SCENES.length-1?`<button class="btn primary" data-go="spot" data-arg="${i+1}">Nächste App</button>`:`<button class="btn primary" data-go="escape">Weiter zu «Entkommen»</button>`}<button class="btn" data-replay="${i}">↺ Nochmals spielen</button></div>`;
+    checkBadges();
+  };
+  const reveal=(id,el,ps,head='',okIds=null)=>{
+    found.add(id);el.classList.add('caught');el.dataset.tag=tagOf(ps);refreshDots();keep();
+    const key='s'+i+':'+id;
+    if(!S.caught.includes(key)){S.caught.push(key);save();addPoints(10*ps.length);}
+    ps.forEach(p=>{discover(p.id);setSt(p.id,!okIds||okIds.includes(p.id));});
+    const link=ps.length===1?`<a class="linkbtn" href="${ps[0].url}" target="_blank" rel="noopener">Echte Beispiele auf da-pa.ch</a>`:'';
+    openSheet(multiInfo(ps,head)+`<div class="row"><button class="btn primary" data-close>${found.size<ids.length?'Weiter suchen':'Fertig'}</button>${link}</div>`,
+      onClose,()=>{if(found.size===ids.length)finish();});
+  };
+  const bonus=(id,ok)=>{const key='q'+i+':'+id;if(ok&&!S.caught.includes(key)){S.caught.push(key);save();addPoints(5);}};
+  scr.onclick=e=>{
+    const el=e.target.closest('.hs');if(!el)return;
+    const id=el.dataset.hs;
+    sc.onTap&&sc.onTap(id,scr);
+    const ps=pidsOf(sc,id);
+    if(!ps.length){
+      el.classList.remove('miss');void el.offsetWidth;el.classList.add('miss');
+      if(lvl()===2)addPoints(-2);
+      openSheet(`<div class="verdict bad">Kein Trick</div><p id="sheetTitle" style="margin:0">${sc.harmless[id]||'Das ist harmlos.'}</p><div class="row"><button class="btn" data-close>Weiter suchen</button></div>`,onClose);
+      return;
+    }
+    if(found.has(id)){openSheet(multiInfo(ps)+closeRow,onClose);return;}
+    const multi=ps.length>1;
+    if(lvl()===1){reveal(id,el,ps,'<div class="verdict good">Erwischt!</div>'+(multi?`<p style="margin:0"><b>Gleich ${ps.length} Tricks auf einmal!</b></p>`:''));return;}
+    const opts=shuffle([...ps,...shuffle(PATTERNS.filter(x=>!ps.includes(x))).slice(0,3)]);
+    const optHtml=opts.map(o=>`<button class="opt" data-o="${o.id}" aria-pressed="false">${o.de} <span class="en">(${o.en})</span></button>`).join('');
+    if(!multi){
+      openSheet(`<div class="verdict good">Treffer!</div><h3 id="sheetTitle">Welcher Trick ist das?</h3><div class="opts">${optHtml}</div>`,
+        e2=>{const b=e2.target.closest('[data-o]');if(!b)return;const ok=b.dataset.o===ps[0].id;bonus(id,ok);
+          sheet.hidden=true;reveal(id,el,ps,ok?'<div class="verdict good">Richtig benannt! +5</div>':'<div class="verdict bad">Fast. Es ist dieser Trick:</div>',ok?null:[]);});
+    } else {
+      openSheet(`<div class="verdict good">Treffer!</div><h3 id="sheetTitle">Welche Tricks stecken hier drin?</h3><p class="muted" style="margin:0">Mehrere Antworten sind richtig. Tippe alle an, dann auf «Prüfen».</p><div class="opts">${optHtml}</div><div class="row"><button class="btn primary" data-check>Prüfen</button></div>`,
+        e2=>{const b=e2.target.closest('[data-o]');
+          if(b){const on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',String(on));b.classList.toggle('picked',on);return;}
+          if(!e2.target.closest('[data-check]'))return;
+          const picked=[...sheetCard.querySelectorAll('[data-o][aria-pressed="true"]')].map(x=>x.dataset.o);
+          const hits=ps.filter(p=>picked.includes(p.id)).length, ok=hits===ps.length&&picked.length===ps.length;
+          bonus(id,ok);sheet.hidden=true;
+          reveal(id,el,ps,ok?'<div class="verdict good">Alle richtig! +5</div>':`<div class="verdict bad">${hits} von ${ps.length} erkannt${picked.length>hits?', dazu falsche angetippt':''}. Hier steckt drin:</div>`,ps.filter(p=>picked.includes(p.id)).map(p=>p.id));});
+    }
+  };
+  $('#hintBtn').onclick=()=>{
+    const next=ids.find(x=>!found.has(x));if(!next)return;
+    if(lvl()===2){if(S.points<3){toast('Zu wenig Punkte für einen Tipp');return;}addPoints(-3);}
+    $('#hint').textContent=sc.hints[next];
+  };
+  $('#againBtn').onclick=()=>replayScene(i);
+  (S.prog[i]||[]).forEach(id=>{const el=scr.querySelector(`[data-hs="${id}"]`);if(!el||!sc.tricks[id])return;found.add(id);el.classList.add('caught');el.dataset.tag=tagOf(pidsOf(sc,id));sc.onTap&&sc.onTap(id,scr);});
+  refreshDots();
+  if(found.size===ids.length)finish(true);
+  $('#solveBtn').onclick=()=>{
+    const left=ids.filter(x=>!found.has(x));if(!left.length)return;
+    const all=[];
+    left.forEach(id=>{const el=scr.querySelector(`[data-hs="${id}"]`),ps=pidsOf(sc,id);found.add(id);el.classList.add('caught');el.dataset.tag=tagOf(ps);ps.forEach(p=>{discover(p.id);setSt(p.id,false);all.push(p);});});
+    refreshDots();keep();$('#hint').textContent='';
+    $('#after').innerHTML=`<div class="mission"><b>Aufgelöst.</b> Diese Tricks hast du nicht gefunden (dafür gibt es keine Punkte):</div><div class="opts">${all.map(p=>`<button class="opt" data-pi="${p.id}">${chip(p.cat)} ${pname(p)}</button>`).join('')}</div><div class="row"><button class="btn primary" data-replay="${i}">↺ Nochmals versuchen</button>${i<SCENES.length-1?`<button class="btn" data-go="spot" data-arg="${i+1}">Nächste App</button>`:''}</div>`;
+    $('#after').onclick=e=>{const pb=e.target.closest('[data-pi]');if(pb)openSheet(patternInfo(P[pb.dataset.pi])+closeRow,onClose);};
+  };
+};
+function replayScene(i){if(S.prog)delete S.prog[i];save();go('spot',i);}
+document.addEventListener('click',e=>{const r=e.target.closest('[data-replay]');if(r)replayScene(Number(r.dataset.replay));});
+function stamp(wrap,txt='Durchschaut!'){const d=document.createElement('div');d.className='stamp';d.innerHTML=`<span>${txt}</span>`;wrap.appendChild(d);setTimeout(()=>d.remove(),2600);}
+
+/* ============ Entkommen ============ */
+const MISSIONS=[
+ {id:'cookie',title:'Cookie-Banner',goal:'Du willst nur das Wetter checken. Ziel: Lehne alle Cookies ab, die nicht nötig sind.',
+  patterns:['visual','clickfatigue'],
+  init:()=>({step:'banner',t:{stat:true,mark:true,pers:true,social:true},pt:Array(8).fill(true),msg:''}),
+  render(st){
+    const bg=`<div class="wet"><div class="w-top">☁ WetterLive</div><div class="w-body"><div class="w-big">14°</div><div>Seedorf, leicht bewölkt</div><div class="w-days"><span>Di<br>☀ 17°</span><span>Mi<br>🌦 13°</span><span>Do<br>🌧 11°</span><span>Fr<br>⛅ 15°</span></div></div>`;
+    const tg=(k,on,lock)=>`<button class="tg ${on?'on':''} ${lock?'locked':''}" ${lock?'disabled':''} data-act="${k}" aria-pressed="${on}" aria-label="Schalter"><span></span></button>`;
+    if(st.step==='banner')return bg+`<div class="ck-overlay"><div class="ck-banner"><b>Wir lieben Cookies 🍪</b><p>Wir und unsere 8 Partner verwenden Cookies, um dir das beste Erlebnis zu bieten.</p><button class="ck-accept" data-act="acceptAll">Alle akzeptieren</button><button class="ck-link" data-act="settings">Einstellungen</button></div></div></div>`;
+    if(st.step==='settings'){
+      const on=Object.values(st.t).filter(Boolean).length+(st.pt.some(Boolean)?1:0);
+      return bg+`<div class="ck-panel"><h4>Privatsphäre-Einstellungen</h4><div class="ck-list">
+       <div class="ck-row"><span>Notwendig<small>Damit die Seite funktioniert</small></span>${tg('x',true,true)}</div>
+       <div class="ck-row"><span>Statistik<small>Wie du die Seite nutzt</small></span>${tg('t:stat',st.t.stat)}</div>
+       <div class="ck-row"><span>Marketing<small>Werbung auf anderen Seiten</small></span>${tg('t:mark',st.t.mark)}</div>
+       <div class="ck-row"><span>Personalisierung<small>Inhalte nach deinen Interessen</small></span>${tg('t:pers',st.t.pers)}</div>
+       <div class="ck-row"><span>Soziale Medien<small>Teilen-Knöpfe</small></span>${tg('t:social',st.t.social)}</div>
+       <div class="ck-row"><span>Partner (8)<small>${st.pt.filter(Boolean).length} von 8 erlaubt</small></span><button class="ck-more" data-act="partners">Verwalten ›</button></div>
+      </div><div class="ck-foot">${st.msg?`<p class="ck-msg">${st.msg}</p>`:''}<button class="ck-accept" data-act="acceptAll">Alle akzeptieren</button><button class="ck-save" data-act="save">Auswahl speichern</button></div></div></div>`;
+    }
+    if(st.step==='partners'){
+      const names=['AdNexa','Trackly','Pixelfox','DataBee','ClickHub','Sportyfy Ads','MegaReach','InfoSphere'];
+      return bg+`<div class="ck-panel"><h4>Unsere Partner</h4><div class="ck-list">${names.map((n,k)=>`<div class="ck-row"><span>${n}<small>Berechtigtes Interesse</small></span>${tg('p:'+k,st.pt[k])}</div>`).join('')}</div><div class="ck-foot"><button class="ck-save" data-act="pnone" style="color:#16181d;border-color:#9aa0aa">Alle Partner abwählen</button><button class="ck-save" data-act="back" style="color:#1a4fd6;border-color:#1a4fd6">‹ Zurück</button></div></div></div>`;
+    }
+  },
+  act(st,a){
+    if(a==='acceptAll')return {trap:'Zack, alle Cookies akzeptiert. Genau das wollte die Seite: Der grüne Knopf ist riesig, «Einstellungen» kaum sichtbar.'};
+    if(a==='settings'){st.step='settings';return;}
+    if(a==='partners'){st.step='partners';return;}
+    if(a==='back'){st.step='settings';return;}
+    if(a.startsWith('t:')){const k=a.slice(2);st.t[k]=!st.t[k];st.msg='';return;}
+    if(a.startsWith('p:')){const k=Number(a.slice(2));st.pt[k]=!st.pt[k];return;}
+    if(a==='pnone'){st.pt=st.pt.map(()=>false);return;}
+    if(a==='save'){
+      const left=Object.values(st.t).filter(Boolean).length+st.pt.filter(Boolean).length;
+      if(left===0)return {done:true};
+      st.msg=`Gespeichert? Moment: ${left} Cookie-Arten oder Partner sind noch erlaubt.`;return;
+    }
+  },
+  doneText:st=>`<b>Gut gemacht, du hast alle unnötigen Cookies abgelehnt!</b> Dafür hast du <b>${st.clicks} Klicks</b> gebraucht. Zustimmen wäre mit <b>1 Klick</b> gegangen. Genau das ist der Trick: Ablehnen wird absichtlich mühsam gemacht, damit möglichst viele aufgeben.`},
+ {id:'wall',title:'Cookie-Wall',goal:'Du willst einen Artikel über das Derby lesen. Ziel: Lies ihn, ohne Werbetracking zu erlauben.',
+  patterns:['forcedaction'],
+  init:()=>({step:'wall'}),
+  render(st){
+    const bg=`<div class="news"><div class="nw-top">Seeblick News</div><div class="nw-body"><h4>FC Seedorf gewinnt das Derby 3:2</h4><p>Was für ein Abend im Stadion: Zwei Tore in der Nachspielzeit drehten die Partie.</p><p>Die Fans feierten noch lange nach dem Schlusspfiff.</p></div>`;
+    const box=inner=>bg+`<div class="nw-wall"><div class="nw-box">${inner}</div></div></div>`;
+    if(st.step==='wall')return box(`<h4>Lesen Sie Seeblick News</h4><p>Mit Werbung und Tracking durch uns und 312 Partner. Oder werbefrei mit einem Abo.</p><button class="nw-ok" data-act="agree">Akzeptieren und weiterlesen</button><button class="nw-abo" data-act="abo">Ohne Tracking: Abo für CHF 4.90 pro Monat</button><button class="nw-link" data-act="info">Was bedeutet das?</button>`);
+    if(st.step==='info')return box(`<h4>Was bedeutet das?</h4><p>Wenn du akzeptierst, dürfen 312 Partnerfirmen verfolgen, was du liest und anklickst, auch auf anderen Seiten. Einen Knopf «Ablehnen» ohne Abo gibt es hier nicht.</p><button class="nw-abo" data-act="wall">‹ Zurück</button>`);
+    if(st.step==='abo')return box(`<h4>Abo abschliessen</h4><div class="nw-field">E-Mail-Adresse</div><div class="nw-field">Kreditkarte</div><div class="nw-field">Rechnungsadresse</div><p>CHF 4.90 pro Monat, jederzeit kündbar.</p><button class="nw-abo" data-act="wall">‹ Zurück, ich habe keine Kreditkarte</button>`);
+    if(st.step==='reflect')return box(`<h4>Hmm. Gratis lesen ging nur mit Tracking.</h4><p>Was könntest du stattdessen tun?</p><button class="nw-abo" data-act="good">Die gleiche Nachricht auf einer anderen Seite lesen, die einen echten Ablehnen-Knopf hat</button><button class="nw-abo" data-act="good">Nach dem Lesen die Cookies im Browser löschen</button><button class="nw-abo" data-act="meh">Immer akzeptieren, ist doch egal</button>`);
+  },
+  act(st,a){
+    if(a==='agree'){st.step='reflect';return;}
+    if(a==='meh')return {note:'Verständlich, aber dann wissen viele Firmen, was du liest. Probier eine andere Antwort.'};
+    if(a==='good')return {done:true};
+    st.step=a;
+  },
+  doneText:()=>'Den Artikel gab es gratis nur gegen deine Daten. Ablehnen ohne zu bezahlen war nicht vorgesehen. Genau das ist Erzwungene Handlung.'},
+ {id:'cancel',title:'Abo kündigen',goal:'Du hast StreamBox einen Monat getestet. Ziel: Kündige dein Abo.',
+  patterns:['roach','confirmshaming','nagging'],
+  init:()=>({step:'home',reason:null}),
+  render(st){
+    const top=`<div class="sb-top"><span class="sb-logo">StreamBox</span><button class="sb-av" data-act="account" aria-label="Profil">L</button></div>`;
+    if(st.step==='home')return `<div class="sbx">${top}<div class="sb-hero"><b style="font-size:18px">Drachenschule</b><span>Staffel 2, Folge 4</span><button class="sb-play" data-act="noop:Das startet nur die Serie.">▶ Weiterschauen</button></div><div class="sb-h">Neu für dich</div><div class="sb-tiles"><button data-act="noop:Das ist eine Serie." style="background:#0ea5e9">Robo Kids</button><button data-act="noop:Das ist eine Serie." style="background:#16a34a">Wald-WG</button><button data-act="noop:Das ist eine Serie." style="background:#db2777">Pop Stars</button></div></div>`;
+    if(st.step==='account')return `<div class="sbx">${top}<div class="sb-list"><button class="sb-up" data-act="upgrade">⭐ Auf Premium upgraden</button><button class="sb-item" data-act="noop:Hier kannst du nur deinen Namen ändern.">Profil bearbeiten</button><button class="sb-item" data-act="noop:Hier kannst du nur die Zahlungsart ändern.">Zahlungsmethode</button><button class="sb-item" data-act="noop:Hier geht es nur um Untertitel und Sprache.">Sprache &amp; Untertitel</button><button class="sb-item" data-act="help">Hilfe &amp; mehr</button><button class="sb-item" data-act="home">‹ Zurück</button></div></div>`;
+    if(st.step==='help')return `<div class="sbx">${top}<div class="sb-list"><b style="padding:8px 4px">Häufige Fragen</b><button class="sb-item" data-act="noop:Nur eine Anleitung zum Herunterladen.">Wie lade ich Folgen herunter?</button><button class="sb-item" data-act="noop:Nur eine Anleitung zur Kindersicherung.">Kindersicherung einrichten</button><button class="sb-item" data-act="noop:Nur eine Anleitung für den Fernseher.">StreamBox auf dem TV</button><button class="sb-item" data-act="noop:Nur Tipps zur Internetverbindung.">Video ruckelt, was tun?</button><button class="sb-item" data-act="account">‹ Zurück</button><button class="sb-tiny" data-act="sure">Mitgliedschaft verwalten</button></div></div>`;
+    if(st.step==='sure')return `<div class="sbx">${top}<div class="sb-center"><div style="font-size:48px">😢</div><h4>Wirklich gehen?</h4><p>Diesen Monat erscheinen 12 neue Serien. Die verpasst du alle!</p><button class="sb-big" data-act="stay">Ich bleibe!</button><button class="sb-small" data-act="offer">Ja, ich verzichte auf alles, was Spass macht</button></div></div>`;
+    if(st.step==='offer')return `<div class="sbx">${top}<div class="sb-center"><div style="font-size:48px">🎁</div><h4>Warte! Nur für dich:</h4><p>3 Monate zum halben Preis!</p><button class="sb-big" data-act="takeoffer">Angebot annehmen</button><button class="sb-small" data-act="reason">Nein, weiter zur Kündigung</button></div></div>`;
+    if(st.step==='reason'){const rs=['Zu teuer','Zu wenig Serien','Anderer Grund'];return `<div class="sbx">${top}<div class="sb-center" style="text-align:left"><h4>Warum gehst du?</h4><p style="margin:0;font-size:12px;color:#888">Pflichtfeld</p>${rs.map((r,k)=>`<button class="sb-radio ${st.reason===k?'sel':''}" data-act="r:${k}"><i></i>${r}</button>`).join('')}<button class="sb-confirm" data-act="confirm" ${st.reason===null?'disabled':''}>Kündigung abschliessen</button></div></div>`;}
+  },
+  act(st,a){
+    if(a.startsWith('noop:'))return {note:a.slice(5)};
+    if(a==='upgrade')return {trap:'Oh nein, du hast auf Premium upgegradet statt gekündigt. Der grosse bunte Knopf hat dich abgelenkt.'};
+    if(a==='stay')return {trap:'Du bist geblieben. Das Abo läuft weiter. Der traurige Smiley hat gewirkt.'};
+    if(a==='takeoffer')return {trap:'Angebot angenommen, das Abo läuft jetzt sogar 3 Monate weiter.'};
+    if(a.startsWith('r:')){st.reason=Number(a.slice(2));return;}
+    if(a==='confirm')return {done:true};
+    st.step=a;
+  },
+  doneText:st=>`Gekündigt! Anmelden ging mit <b>1 Klick</b>. Kündigen hat <b>${st.clicks} Klicks</b> gebraucht, mit Abzweigungen, Schuldgefühlen und einem Lockangebot.`},
+ {id:'agb',title:'Neue Regeln',goal:'Du willst deiner Freundin schreiben. Doch die Chat-App «Blabla» zeigt dir zuerst etwas Neues. Ziel: Finde heraus, was hier passiert.',
+  patterns:['forcedreview'],
+  init:()=>({step:'modal',read:false}),
+  render(st){
+    const bg=`<div class="bla"><div class="bl-top">Blabla</div><div class="bl-chat"><div>Mia: Kommst du morgen?</div><div>Jonas: 😂😂</div><div>Klasse 6b: Hausaufgaben?</div></div>`;
+    if(st.step==='modal')return bg+`<div class="bl-modal"><div class="bl-box"><h4>Wir haben unsere Nutzungsbedingungen aktualisiert</h4><p>Um Blabla weiter zu nutzen, musst du den neuen Bedingungen zustimmen.</p><button class="bl-agree" data-act="agree">Zustimmen &amp; weiterchatten</button><button class="bl-no" data-act="reject">Ablehnen</button><button class="bl-link" data-act="summary">Was ändert sich?</button></div></div></div>`;
+    if(st.step==='summary')return bg+`<div class="bl-modal"><div class="bl-box"><h4>Das ist neu</h4><ul><li>Blabla wertet aus, über welche Themen du chattest, und zeigt dir passende Werbung.</li><li>Dein Profilbild darf in Werbung für Blabla erscheinen.</li><li>Die Regeln können jederzeit wieder geändert werden.</li></ul><button class="bl-no" data-act="modal">‹ Zurück</button></div></div></div>`;
+    if(st.step==='reject')return bg+`<div class="bl-modal"><div class="bl-box"><div style="font-size:40px">🔒</div><h4>Ohne Zustimmung geht es nicht</h4><p>Wenn du nicht zustimmst, kannst du Blabla nicht mehr benutzen. Deine Chats bleiben gesperrt.</p><button class="bl-no" data-act="modal">‹ Zurück</button></div></div></div>`;
+    if(st.step==='reflect')return bg+`<div class="bl-modal"><div class="bl-box"><h4>Hmm. Hattest du eine echte Wahl?</h4><p>Was wäre in so einer Situation eine gute Idee?</p><button class="bl-no" data-act="good">Nachlesen, was sich ändert, und mit jemandem darüber reden</button><button class="bl-no" data-act="good">Schauen, ob es eine andere App gibt, die meine Freund:innen auch nutzen</button><button class="bl-no" data-act="meh">Immer sofort zustimmen, das liest eh niemand</button></div></div></div>`;
+  },
+  act(st,a){
+    if(a==='summary'){if(!st.read){st.read=true;addPoints(10);toast('Gut, du liest nach!');}st.step='summary';return;}
+    if(a==='agree'){st.step='reflect';return;}
+    if(a==='meh')return {note:'Verständlich, aber so merkst du nie, wozu du Ja sagst. Probier eine andere Antwort.'};
+    if(a==='good')return {done:true};
+    st.step=a;
+  },
+  doneText:st=>st.read?'Stark: Du hast nachgelesen, bevor du zugestimmt hast. Eine echte Wahl hattest du trotzdem nicht.':'Eine echte Wahl hattest du nicht: Zustimmen oder die App nicht mehr nutzen. Tipp: Beim nächsten Mal zuerst «Was ändert sich?» antippen.'}
+];
+
+VIEWS.escape=(arg)=>{
+  if(arg===undefined){
+    main.innerHTML=`<section class="wrap"><div class="crumbs"><button class="linkbtn" data-go="hub">‹ Stationen</button></div>
+    <h1 class="h1">Entkommen</h1><p class="lead">Vier Missionen, die eigentlich ganz einfach sein sollten. Achtung: Die Apps wollen dich aufhalten.</p>
+    <div class="picker">${MISSIONS.map((m,i)=>`<button class="pick-item" data-go="escape" data-arg="${i}"><b>Mission ${i+1}: ${m.title}</b><span class="muted">${m.goal}</span>${S.escapes.includes(m.id)?'<span class="done">✔ geschafft</span>':''}</button>`).join('')}</div></section>`;
+    return;
+  }
+  const i=Number(arg), m=MISSIONS[i];
+  S.escSt=S.escSt||{};
+  const saved=S.escSt[m.id];
+  let st=saved&&saved.st?saved.st:Object.assign(m.init(),{clicks:0}), over=!!(saved&&saved.over);
+  const keepE=()=>{S.escSt[m.id]={st,over};save();};
+  main.innerHTML=`<section class="wrap"><div class="crumbs"><button class="linkbtn" data-go="escape">‹ Alle Missionen</button></div>
+   <div class="game">
+    <div class="phone-wrap"><div class="phone"><div class="screen" id="scr"></div></div></div>
+    <aside class="side">
+     <h2>Mission ${i+1}: ${m.title}</h2>
+     <div class="mission">${m.goal}</div>
+     <p class="muted" style="margin:0">Klicks: <b id="clicks">0</b></p>
+     <div class="row"><button class="btn small" id="restart">↺ Neu starten</button></div>
+     <div id="after"></div>
+    </aside>
+   </div></section>`;
+  const scr=$('#scr');
+  const draw=()=>{scr.innerHTML=m.render(st);$('#clicks').textContent=st.clicks;keepE();};
+  const restart=()=>{st=Object.assign(m.init(),{clicks:0});over=false;$('#after').innerHTML='';draw();};
+  $('#restart').onclick=restart;
+  const showDone=()=>{
+      $('#after').innerHTML=`<div class="mission">${m.doneText(st)}</div>
+       <p style="margin:4px 0 0"><b>Diese Tricks haben dich aufgehalten:</b></p>
+       <div class="opts">${m.patterns.map(id=>`<button class="opt" data-pi="${id}">${chip(P[id].cat)} ${pname(P[id])}</button>`).join('')}</div>
+       <div class="row">${i<MISSIONS.length-1?`<button class="btn primary" data-go="escape" data-arg="${i+1}">Nächste Mission</button>`:`<button class="btn primary" data-go="sort">Weiter zu «Sortieren»</button>`}<button class="btn" id="again2">↺ Nochmals spielen</button></div>`;
+      $('#again2').onclick=restart;
+      $('#after').onclick=e2=>{const pb=e2.target.closest('[data-pi]');if(pb)openSheet(patternInfo(P[pb.dataset.pi])+'<div class="row"><button class="btn" data-close>Schliessen</button></div>',e3=>{if(e3.target.closest('[data-close]'))closeSheet();});};
+  };
+  draw();
+  if(over)showDone();
+  scr.onclick=e=>{
+    if(over)return;
+    const b=e.target.closest('[data-act]');if(!b||b.disabled)return;
+    st.clicks++;
+    const r=m.act(st,b.dataset.act);
+    if(r&&r.trap){
+      if(lvl()===2)addPoints(-5);
+      openSheet(`<div class="verdict bad">Reingefallen!</div><p id="sheetTitle" style="margin:0">${r.trap}</p><div class="row"><button class="btn primary" data-close>Nochmals versuchen</button></div>`,e2=>{if(e2.target.closest('[data-close]'))closeSheet();},restart);
+      return;
+    }
+    if(r&&r.note){draw();toast(r.note);return;}
+    if(r&&r.done){
+      over=true;draw();
+      const first=!S.escapes.includes(m.id);
+      if(first){S.escapes.push(m.id);save();addPoints(30);}
+      m.patterns.forEach(id=>{discover(id);setSt(id,true);});
+      stamp($('.phone-wrap'),'Geschafft!');
+      showDone();
+      checkBadges();
+      return;
+    }
+    draw();
+  };
+};
+
+/* ============ Sortieren ============ */
+VIEWS.sort=(arg)=>{
+  let run=S.sortRun;
+  if(Array.isArray(arg)||!run||!Array.isArray(run.deck)||run.k>=run.deck.length){
+    run={deck:Array.isArray(arg)?arg:shuffle(Object.keys(SORTCARDS)).slice(0,10),k:0,score:0,wrong:[]};
+    S.sortRun=run;save();
+  }
+  const deck=run.deck.filter(x=>SORTCARDS[x]),n=deck.length,wrong=run.wrong;
+  let k=run.k,score=run.score;
+  const renderCard=()=>{
+    if(k>=deck.length){
+      const best=n===10&&score>S.sortBest; if(best){S.sortBest=score;}
+      S.sortRun=null;save();
+      checkBadges();
+      main.innerHTML=`<section class="wrap"><div class="crumbs"><button class="linkbtn" data-go="hub">‹ Stationen</button></div>
+       <h1 class="h1">${score} von ${n} richtig</h1>
+       <p class="lead">${score>=8?'Starker Durchblick!':score>=5?'Gut! Mit dem Sammelalbum wird es noch besser.':'Schau dir die Tricks im Sammelalbum an und versuch es nochmals.'}${best?' Neuer Bestwert!':''}</p>
+       <div class="row"><button class="btn primary" data-go="sort">Neue Runde</button>${wrong.length?'<button class="btn" id="practice">Fehler nochmals üben</button>':''}<button class="btn" data-go="album">Sammelalbum</button></div></section>`;
+      const pr=$('#practice');if(pr)pr.onclick=()=>go('sort',wrong.slice());
+      return;
+    }
+    const pid=deck[k],p=P[pid];
+    let opts;
+    if(lvl()===1){
+      opts=Object.keys(CATS).map(c=>`<button class="catbtn" style="--cat:var(--c-${c})" data-c="${c}"><b>${CATS[c].name}</b><small>${CATS[c].d}</small></button>`).join('');
+    } else {
+      const same=shuffle(PATTERNS.filter(x=>x.cat===p.cat&&x.id!==pid)).slice(0,1);
+      const rest=shuffle(PATTERNS.filter(x=>x.id!==pid&&!same.includes(x))).slice(0,3-same.length);
+      opts=shuffle([p,...same,...rest]).map(o=>`<button class="catbtn" style="--cat:var(--c-${o.cat})" data-p="${o.id}"><b>${o.de}</b><small>${o.en}</small></button>`).join('');
+    }
+    main.innerHTML=`<section class="wrap"><div class="crumbs"><button class="linkbtn" data-go="hub">‹ Stationen</button></div>
+     <h1 class="h1">Sortieren</h1>
+     <div class="progressbar" aria-label="Fortschritt"><i style="width:${k/n*100}%"></i></div>
+     <p class="muted">Karte ${k+1} von ${n}. ${lvl()===1?'Zu welcher Kategorie gehört dieser Trick?':'Welcher Trick ist das genau?'}</p>
+     <div class="sort-card"><span class="hand">Beispiel</span>${SORTCARDS[pid]}</div>
+     <div class="catbtns" id="answers">${opts}</div>
+     <div id="fb" style="margin-top:16px;max-width:640px"></div></section>`;
+    $('#answers').onclick=e=>{
+      const b=e.target.closest('.catbtn');if(!b||$('#answers').dataset.done)return;
+      $('#answers').dataset.done='1';
+      const right=lvl()===1?b.dataset.c===p.cat:b.dataset.p===pid;
+      b.classList.add(right?'right':'wrong');
+      const correctBtn=$('#answers').querySelector(lvl()===1?`[data-c="${p.cat}"]`:`[data-p="${pid}"]`);correctBtn&&correctBtn.classList.add('right');
+      if(right){score++;addPoints(10);}else wrong.push(pid);
+      run.k=k+1;run.score=score;save();
+      discover(pid);setSt(pid,right);
+      $('#fb').innerHTML=`<div class="mission"><div class="verdict ${right?'good':'bad'}">${right?'Richtig!':'Nicht ganz.'}</div><p style="margin:.3em 0">${chip(p.cat)} <b>${pname(p)}</b>: ${pexp(p)}</p></div><div class="row" style="margin-top:10px"><button class="btn primary" id="nextCard">${k<n-1?'Nächste Karte':'Auswertung'}</button></div>`;
+      $('#nextCard').onclick=()=>{k++;renderCard();window.scrollTo(0,0);};
+      $('#nextCard').focus();
+    };
+  };
+  renderCard();
+};
+
+/* ============ Sammelalbum ============ */
+VIEWS.album=()=>{
+  main.innerHTML=`<section class="wrap"><h1 class="h1">Sammelalbum</h1>
+   <p class="lead">${S.disc.length} von 20 Tricks entdeckt. Tippe auf einen Trick, um mehr zu erfahren. Auch die noch nicht entdeckten kannst du schon lesen.</p>
+   ${Object.keys(CATS).map(c=>`<div class="cat-sec" style="--cat:var(--c-${c})"><h2><span class="bar"></span>${CATS[c].name}</h2><p class="muted" style="margin-top:0">${CATS[c].d}</p>
+    <div class="stickers">${PATTERNS.filter(p=>p.cat===c).map(p=>{const got=S.disc.includes(p.id);return `<button class="sticker ${got?'got':''}" data-pi="${p.id}"><b>${p.de}</b><span class="en">${p.en}</span><span class="st">${!got?'noch nicht entdeckt':(S.st&&S.st[p.id]==='unsure')?'↻ nochmals anschauen':'✔ erkannt'}</span></button>`;}).join('')}</div></div>`).join('')}
+  </section>`;
+  main.onclick=e=>{const b=e.target.closest('[data-pi]');if(!b)return;const p=P[b.dataset.pi];
+    openSheet(patternInfo(p)+`<div class="row"><button class="btn" data-close>Schliessen</button><a class="linkbtn" href="${p.url}" target="_blank" rel="noopener">Echte Beispiele auf da-pa.ch</a></div>`,e2=>{if(e2.target.closest('[data-close]'))closeSheet();});};
+};
+
+/* ============ Abzeichen ============ */
+VIEWS.badges=()=>{
+  main.innerHTML=`<section class="wrap"><h1 class="h1">Abzeichen</h1><p class="lead">${S.badges.length} von ${BADGES.length} gesammelt. Punkte: ${S.points}.</p>
+   <div class="badges">${BADGES.map(b=>{const got=S.badges.includes(b.id);return `<div class="badge ${got?'':'locked'}"><span class="ic" aria-hidden="true">${b.ic}</span><b>${b.name}</b><span class="muted">${b.desc}</span>${got?'<span style="color:var(--ok);font-weight:700">✔ erhalten</span>':''}</div>`;}).join('')}</div></section>`;
+};
+
+/* ============ Lehrpersonen ============ */
+VIEWS.teach=()=>{
+  main.innerHTML=`<section class="wrap prose">
+   <h1 class="h1">Für Lehrpersonen</h1>
+   <p class="lead">«Durchschaut!» macht die 20 Dark Patterns von <a href="https://da-pa.ch" target="_blank" rel="noopener">da-pa.ch</a> spielerisch erlebbar. Systematik und Begriffe stammen von der Stiftung für Konsumentenschutz, die fünf Kategorien sind Druckausübung, Erschleichung, Hindernisse, Irreführung und Operativer Zwang.</p>
+   <h2>Die vier Stationen</h2>
+   <ul>
+    <li><b>Trickjagd:</b> Sechs erfundene Apps mit je vier verdächtigen Stellen. Die Lernenden tippen auf verdächtige Elemente und erhalten eine Erklärung mit Schutztipp. In der letzten App (Social-Media-App) stecken wie in vielen echten Fällen mehrere Tricks in einer Stelle. Wer nicht weiterkommt, kann eine App auflösen und neu starten.</li>
+    <li><b>Entkommen:</b> Vier Missionen (Cookies ablehnen, Cookie-Wall «Zahlen oder Zustimmen», Abo kündigen, neuen AGB begegnen). Hier erleben die Lernenden, wie Klick-Müdigkeit, Kakerlakenfalle oder Erzwungene Überprüfung sich anfühlen. Ein Klickzähler macht den Aufwand sichtbar.</li>
+    <li><b>Sortieren:</b> Zehn zufällige Alltagsbeispiele zuordnen.</li>
+    <li><b>Sammelalbum:</b> Alle 20 Tricks zum Nachlesen, mit Links zu echten Beispielen in der Hall of Shame.</li>
+   </ul>
+   <h2>Zwei Niveaus</h2>
+   <p><b>Einstieg:</b> einfache Sprache, beim Sortieren werden die fünf Kategorien zugeordnet, Tipps und Fehlklicks kosten keine Punkte.<br><b>Profi:</b> Fachbegriffe mit englischen Originalnamen, gefundene Tricks müssen benannt werden, beim Sortieren wird der genaue Trick bestimmt, Fehlklicks und Tipps kosten Punkte.</p>
+   <h2>Lernbilanz statt Überwachung</h2>
+   <p>Unter «Mein Fortschritt» erstellen die Lernenden selbst eine Lernbilanz. Sie zeigt, welche Tricks sie erkennen, bei welchen sie noch unsicher sind (aufgelöst, falsch benannt oder falsch sortiert) und welchen sie noch nicht begegnet sind. Dazu kommen zwei freiwillige Reflexionsfragen. Punkte, Klickzahlen, Zeiten und Fehlversuche stehen nicht drin. Die Lernenden entscheiden, ob sie die Datei teilen.</p>
+   <p>So lässt sich die Bilanz nutzen: Die Liste «noch unsicher» eignet sich für eine kurze Repetition, die Reflexionsantworten für ein Klassengespräch. Eine Bewertung oder Notengebung ist damit nicht gedacht.</p>
+   <h2>Datenschutz</h2>
+   <p>Keine Anmeldung, keine Namen. Punkte, Abzeichen und Sammelalbum werden nur lokal im Browser des jeweiligen Geräts gespeichert. Auf geteilten Geräten lässt sich der Stand unten zurücksetzen.</p>
+   <h2>Hinweise</h2>
+   <ul>
+    <li>Alle Apps, Marken und Preise im Spiel sind erfunden. Echte, geprüfte Beispiele aus der Schweiz finden sich in der <a href="https://da-pa.ch/hall-of-shame/" target="_blank" rel="noopener">Hall of Shame</a>.</li>
+    <li>In der Praxis treten Dark Patterns oft kombiniert auf. Ein Element kann mehreren Kategorien zugeordnet werden, das eignet sich gut als Gesprächsanlass.</li>
+   </ul>
+   <div class="row" style="margin-top:20px"><button class="btn" id="reset">Fortschritt auf diesem Gerät zurücksetzen</button>${S.level?'<button class="btn primary" data-go="hub">Zu den Stationen</button>':'<button class="btn primary" data-go="start">Zum Start</button>'}</div>
+  </section>`;
+  $('#reset').onclick=()=>openSheet(`<h3 id="sheetTitle">Wirklich alles zurücksetzen?</h3><p style="margin:0">Punkte, Abzeichen und Sammelalbum auf diesem Gerät werden gelöscht.</p><div class="row"><button class="btn primary" data-yes>Zurücksetzen</button><button class="btn" data-close>Abbrechen</button></div>`,
+    e=>{if(e.target.closest('[data-close]'))closeSheet();if(e.target.closest('[data-yes]')){Object.assign(S,{level:null,points:0,disc:[],caught:[],scenes:[],escapes:[],sortBest:0,badges:[],st:{},prog:{},escSt:{},sortRun:null});save();updateHeader();closeSheet();go('start');}});
+};
+
+const TKEY='durchschaut-theme';
+const effDark=()=>{const t=document.documentElement.dataset.theme;return t?t==='dark':matchMedia('(prefers-color-scheme: dark)').matches;};
+const themeLabel=()=>{$('#themeBtn').textContent=effDark()?'☀️ Hell':'🌙 Dunkel';};
+try{const t=localStorage.getItem(TKEY);if(t)document.documentElement.dataset.theme=t;}catch(e){}
+themeLabel();
+$('#themeBtn').onclick=()=>{const t=effDark()?'light':'dark';document.documentElement.dataset.theme=t;try{localStorage.setItem(TKEY,t);}catch(e){}themeLabel();};
+/* ============ Spielstand ============ */
+let DL=null;
+try{window.claude&&window.claude.use&&window.claude.use('downloads').then(d=>{DL=d;}).catch(()=>{});}catch(e){}
+function saveFile(name,text,type){
+  if(DL){
+    DL.save({filename:name,data:text}).then(()=>toast('Gespeichert')).catch(e=>{if(e&&e.code==='declined')return;toast('Speichern geht hier nicht. Nutze den Spielcode.');});
+    return;
+  }
+  try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;document.body.appendChild(a);a.click();a.remove();}
+  catch(e){toast('Speichern geht hier nicht. Nutze den Spielcode.');}
+}
+const stateCode=()=>'DS1:'+btoa(unescape(encodeURIComponent(JSON.stringify(S))));
+function cleanState(o){
+  if(o&&o.app==='durchschaut')o=o.state;
+  if(!o||typeof o!=='object')throw new Error('bad');
+  const arr=x=>Array.isArray(x)?x:[];
+  const ids=new Set(PATTERNS.map(p=>p.id));
+  return {level:[1,2].includes(o.level)?o.level:1,
+    points:Math.max(0,Math.min(99999,Math.round(Number(o.points)||0))),
+    disc:[...new Set(arr(o.disc).filter(x=>ids.has(x)))],
+    caught:arr(o.caught).filter(x=>typeof x==='string'&&x.length<20).slice(0,500),
+    scenes:[...new Set(arr(o.scenes).filter(x=>Number.isInteger(x)&&x>=0&&x<SCENES.length))],
+    escapes:[...new Set(arr(o.escapes).filter(x=>MISSIONS.some(m=>m.id===x)))],
+    sortBest:Math.max(0,Math.min(10,Math.round(Number(o.sortBest)||0))),
+    badges:[...new Set(arr(o.badges).filter(x=>BADGES.some(b=>b.id===x)))],
+    prog:Object.fromEntries(Object.entries(o.prog&&typeof o.prog==='object'?o.prog:{}).filter(([k,v])=>Number(k)<SCENES.length&&Array.isArray(v)).map(([k,v])=>[k,v.filter(x=>typeof x==='string')])),
+    st:Object.fromEntries(Object.entries(o.st&&typeof o.st==='object'?o.st:{}).filter(([k,v])=>ids.has(k)&&(v==='ok'||v==='unsure')))};
+}
+function parseState(txt){
+  txt=String(txt||'').trim();
+  if(txt.startsWith('DS1:'))txt=decodeURIComponent(escape(atob(txt.slice(4).replace(/\s/g,''))));
+  return cleanState(JSON.parse(txt));
+}
+const lvlName=()=>S.level===2?'Profi':'Einstieg';
+const statusOf=p=>(S.st&&S.st[p.id])||(S.disc.includes(p.id)?'ok':'none');
+function bilanz(){const g={ok:[],unsure:[],none:[]};PATTERNS.forEach(p=>g[statusOf(p)].push(p));return g;}
+const REFLECT=['Wo bist du einem dieser Tricks schon im echten Leben begegnet?','Welcher Trick ärgert dich am meisten, und warum?'];
+let reflectDraft=['',''];
+function summaryHtml(){
+  const g=bilanz();
+  const list=ps=>ps.length?ps.map(p=>`${chip(p.cat)} ${p.de}`).join('<br>'):'<span class="muted">keine</span>';
+  return `<dl>
+   <dt>Niveau</dt><dd>${lvlName()}</dd>
+   <dt>Das kann ich erkennen (${g.ok.length})</dt><dd>${list(g.ok)}</dd>
+   <dt>Da bin ich noch unsicher (${g.unsure.length})</dt><dd>${list(g.unsure)}</dd>
+   <dt>Noch nicht begegnet (${g.none.length})</dt><dd>${list(g.none)}</dd>
+  </dl>`;
+}
+function summaryText(name,answers){
+  const g=bilanz(), d=new Date().toLocaleDateString('de-CH');
+  const sec=(t,ps)=>[t+' ('+ps.length+'):',...(ps.length?ps.map(p=>'  - '+p.de+' ('+CATS[p.cat].name+')'):['  (keine)']),''];
+  const lines=['DURCHSCHAUT! Meine Lernbilanz zu Dark Patterns',d+(name?', '+name:''),'Niveau: '+lvlName(),'',
+    ...sec('Das kann ich erkennen',g.ok),...sec('Da bin ich noch unsicher',g.unsure),...sec('Noch nicht begegnet',g.none),
+    'Nach Kategorien (erkannt):',...Object.keys(CATS).map(c=>{const ps=PATTERNS.filter(p=>p.cat===c);return '  '+CATS[c].name+': '+ps.filter(p=>statusOf(p)==='ok').length+' von '+ps.length;}),''];
+  REFLECT.forEach((q,k)=>{if(answers[k])lines.push(q,'  '+answers[k].replace(/\n/g,'\n  '),'');});
+  return lines.join('\n');
+}
+VIEWS.save=()=>{
+  main.innerHTML=`<section class="wrap prose">
+   <h1 class="h1">Mein Fortschritt</h1>
+   <p class="lead">Dein Fortschritt ist nur in diesem Browser gespeichert. Hier kannst du deine Lernbilanz anschauen, den Spielstand mitnehmen oder neu anfangen.</p>
+   <h2>Meine Lernbilanz</h2>
+   <p>Damit siehst du, was du schon kannst und was du nochmals anschauen solltest. «Unsicher» heisst: aufgelöst, falsch benannt oder falsch sortiert. Wenn du einen Trick später richtig erkennst, wandert er nach oben.</p>
+   <div class="summary">${summaryHtml()}</div>
+   <p>Wenn du willst, kannst du die Bilanz als Datei speichern und deiner Lehrperson geben. Punkte, Fehlversuche und Zeiten stehen nicht drin.</p>
+   ${REFLECT.map((q,k)=>`<label class="field">${q} <span class="muted" style="font-weight:400">(freiwillig)</span><textarea data-r="${k}" rows="2" maxlength="400" style="font-family:inherit;font-size:1rem">${reflectDraft[k].replace(/</g,'&lt;')}</textarea></label>`).join('')}
+   <label class="field">Name oder Kürzel <span class="muted" style="font-weight:400">(freiwillig, kommt nur in die Datei)</span><input id="nm" type="text" maxlength="40" autocomplete="off"></label>
+   <div class="row"><button class="btn primary" id="dlNw">Lernbilanz als Datei speichern</button><button class="btn" data-go="album">Unsichere Tricks im Sammelalbum anschauen</button></div>
+   <h2>Auf ein anderes Gerät mitnehmen</h2>
+   <p>Speichere den Spielstand als Datei oder kopiere den Spielcode, zum Beispiel in eine Nachricht an dich selbst. Auf dem anderen Gerät lädst du ihn unten wieder.</p>
+   <div class="row"><button class="btn" id="dlJs">Spielstand-Datei speichern</button></div>
+   <label class="field">Dein Spielcode<textarea id="code" readonly rows="3">${stateCode()}</textarea></label>
+   <div class="row"><button class="btn small" id="cp">Code kopieren</button></div>
+   <h2>Spielstand laden</h2>
+   <p class="muted">Achtung: Der aktuelle Stand auf diesem Gerät wird dabei ersetzt.</p>
+   <label class="field">Spielstand-Datei wählen<input type="file" id="file" accept=".json,application/json,text/plain"></label>
+   <label class="field">oder Spielcode einfügen<textarea id="incode" rows="3" placeholder="DS1:..."></textarea></label>
+   <div class="row"><button class="btn" id="load">Spielstand laden</button></div>
+   <h2>Neu anfangen</h2>
+   <p>Löscht Punkte, Abzeichen, Sammelalbum und Lernbilanz auf diesem Gerät. Tipp: Vorher den Spielstand speichern, falls du ihn nochmals brauchst.</p>
+   <div class="row"><button class="btn" id="resetMe">Spielstand zurücksetzen</button></div>
+  </section>`;
+  main.querySelectorAll('[data-r]').forEach(t=>t.oninput=()=>{reflectDraft[Number(t.dataset.r)]=t.value;});
+  $('#dlNw').onclick=()=>{const n=$('#nm').value.trim();const slug=n.toLowerCase().replace(/[^a-z0-9äöü]+/g,'-').replace(/^-|-$/g,'');saveFile('durchschaut-lernbilanz'+(slug?'-'+slug:'')+'.txt',summaryText(n,reflectDraft.map(x=>x.trim())),'text/plain');};
+  $('#dlJs').onclick=()=>saveFile('durchschaut-spielstand.json',JSON.stringify({app:'durchschaut',v:1,state:S},null,1),'application/json');
+  $('#cp').onclick=()=>{const t=$('#code');const sel=()=>{t.focus();t.select();toast('Code markiert. Jetzt kopieren.');};
+    if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t.value).then(()=>toast('Code kopiert')).catch(sel);else sel();};
+  const apply=txt=>{
+    let st;try{st=parseState(txt);}catch(e){toast('Das ist kein gültiger Spielstand.');return;}
+    openSheet(`<h3 id="sheetTitle">Spielstand laden?</h3><p style="margin:0">Gefunden: ${st.points} Punkte, ${st.disc.length} von 20 Tricks, ${st.badges.length} Abzeichen. Der Stand auf diesem Gerät wird ersetzt.</p><div class="row"><button class="btn primary" data-yes>Laden</button><button class="btn" data-close>Abbrechen</button></div>`,
+      e=>{if(e.target.closest('[data-close]'))closeSheet();if(e.target.closest('[data-yes]')){Object.assign(S,st);save();updateHeader();closeSheet();toast('Spielstand geladen');go('hub');}});
+  };
+  $('#load').onclick=()=>{
+    const f=$('#file').files&&$('#file').files[0];
+    if(f){const r=new FileReader();r.onload=()=>apply(r.result);r.onerror=()=>toast('Datei konnte nicht gelesen werden.');r.readAsText(f);return;}
+    if($('#incode').value.trim())apply($('#incode').value);else toast('Wähle eine Datei oder füge einen Code ein.');
+  };
+  $('#resetMe').onclick=()=>openSheet(`<h3 id="sheetTitle">Wirklich neu anfangen?</h3><p style="margin:0">Punkte, Abzeichen, Sammelalbum und Lernbilanz auf diesem Gerät werden gelöscht. Das lässt sich nicht rückgängig machen, ausser du hast den Spielstand gespeichert.</p><div class="row"><button class="btn primary" data-yes>Zurücksetzen</button><button class="btn" data-close>Abbrechen</button></div>`,
+    e=>{if(e.target.closest('[data-close]'))closeSheet();if(e.target.closest('[data-yes]')){Object.assign(S,{level:null,points:0,disc:[],caught:[],scenes:[],escapes:[],sortBest:0,badges:[],st:{},prog:{},escSt:{},sortRun:null});reflectDraft=['',''];save();updateHeader();closeSheet();toast('Zurückgesetzt');go('start');}});
+};
+
+/* ============ Impressum ============ */
+VIEWS.imprint=()=>{
+  main.innerHTML=`<section class="wrap prose">
+   <h1 class="h1">Impressum</h1>
+   <h2>Herausgeberin und verantwortlich für den Inhalt</h2>
+   <address class="addr">Sabrina Meier<br>Dozentin Medien und Informatik<br>Co-Leiterin Fachstelle Schule und Digitalität<br>Pädagogische Hochschule Thurgau<br>Unterer Schulweg 3<br>CH-8280 Kreuzlingen<br>E-Mail: <a href="mailto:sabrina.meier@phtg.ch">sabrina.meier@phtg.ch</a></address>
+   <h2>Inhaltliche Grundlage</h2>
+   <p>Systematik, Kategorien und Begriffe der 20 Dark Patterns stammen von <a href="https://da-pa.ch" target="_blank" rel="noopener">da-pa.ch</a>, einer Plattform der Stiftung für Konsumentenschutz mit Unterstützung der Stiftung Mercator Schweiz. Erklärungen, Beispiele und Spiele sind eigenständig formuliert. «Durchschaut!» ist kein Angebot der Stiftung für Konsumentenschutz.</p>
+   <p>Alle Apps, Marken, Personen und Preise im Spiel sind erfunden. Sie sind echten Fällen nachempfunden, stellen aber keine bestimmten Unternehmen dar.</p>
+   <h2>Entstehung</h2>
+   <p>Programmiert wurde die Seite mit KI-Unterstützung, im sogenannten Vibe Coding mit Claude (Anthropic). Konzept, Texte und Beispiele hat die Herausgeberin geprüft und überarbeitet. Sie trägt die inhaltliche Verantwortung.</p>
+   <h2>Lizenz</h2>
+   <p>«Durchschaut!» von Sabrina Meier, PHTG, steht unter der Lizenz <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a>. Du darfst es für nicht-kommerzielle Zwecke teilen und bearbeiten, wenn du die Urheberin nennst und Bearbeitungen unter derselben Lizenz weitergibst.</p>
+   <h2>Datenschutz</h2>
+   <ul>
+    <li>Das Spiel verlangt keine Anmeldung und fragt keine Personendaten ab.</li>
+    <li>Punkte, Abzeichen und Sammelalbum werden nur lokal im Browser des verwendeten Geräts gespeichert. Sie werden nicht an die Herausgeberin übermittelt.</li>
+    <li>Name und Reflexionsantworten, die beim Speichern der Lernbilanz eingegeben werden, landen nur in der heruntergeladenen Datei.</li>
+    <li>Die Schriften werden von Google Fonts geladen. Dabei wird die IP-Adresse des Geräts an Google übermittelt.</li>
+    <li>Die Seite wird bei Vercel Inc. (USA) gehostet. Beim Aufruf verarbeitet Vercel technisch notwendige Daten wie die IP-Adresse, um die Seite auszuliefern.</li>
+   </ul>
+   <h2>Haftung für Links</h2>
+   <p>Für die Inhalte verlinkter externer Seiten sind ausschliesslich deren Betreiberinnen und Betreiber verantwortlich.</p>
+   <div class="row" style="margin-top:20px"><button class="btn primary" data-go="${S.level?'hub':'start'}">Zurück zum Spiel</button></div>
+  </section>`;
+};
+
+updateHeader();
+go(S.level?'hub':'start');
+</script>
+</body>
+</html>
