@@ -12,3 +12,5 @@ Zusammenfassung: https://creativecommons.org/licenses/by-nc-sa/4.0/deed.de
 Vollständiger Lizenztext: https://creativecommons.org/licenses/by-nc-sa/4.0/legalcode.de
 
 Die Systematik der Dark Patterns stammt von da-pa.ch (Stiftung für Konsumentenschutz) und ist nicht Teil dieser Lizenz.
+
+Die eingebetteten Schriften Atkinson Hyperlegible und Gochi Hand stehen unter der SIL Open Font License 1.1 (https://openfontlicense.org) und sind nicht Teil dieser Lizenz.
