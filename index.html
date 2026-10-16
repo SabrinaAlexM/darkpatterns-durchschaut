@@ -683,7 +683,7 @@ footer .row{margin-top:8px}
 <body>
 <header class="top">
   <div class="top-in">
-    <button class="brand" data-go="hub" aria-label="Zur Übersicht"><span>Durchschaut!</span></button>
+    <button class="brand" data-go="start" aria-label="Zur Startseite"><span>Durchschaut!</span></button>
     <nav class="nav" aria-label="Hauptnavigation">
       <button class="nav-main" data-go="hub" data-nav>Stationen</button>
       <button data-go="album" data-nav>Sammelalbum</button>
@@ -1103,7 +1103,7 @@ function checkComplete(){
 function doneBanner(){
   const steps=[['Trickjagd',S.scenes.length,SCENES.length],['Entkommen',S.escapes.length,MISSIONS.length],['Was tust du?',Math.min(S.actRounds||0,1),1]];
   const tot=steps.reduce((a,x)=>a+x[1],0),max=steps.reduce((a,x)=>a+x[2],0);
-  if(!isDone())return `<div class="fin-bar"><div class="row" style="justify-content:space-between"><b>Dein Weg zum Abschluss</b><span class="muted">${steps.map(x=>`${x[0]} ${x[1]}/${x[2]}`).join(' · ')}</span></div><div class="progressbar"><i style="width:${Math.round(tot/max*100)}%"></i></div></div>`;
+  if(!isDone()){const left=max-tot;if(left>3)return '';const open=steps.filter(x=>x[1]<x[2]).map(x=>x[0]==='Was tust du?'?'eine Runde «Was tust du?»':x[0]==='Trickjagd'?`${x[2]-x[1]} ${x[2]-x[1]===1?'App':'Apps'} in der Trickjagd`:`${x[2]-x[1]} ${x[2]-x[1]===1?'Mission':'Missionen'}`).join(', ');return `<div class="fin-bar"><div class="row" style="justify-content:space-between"><b>Fast geschafft!</b><span class="muted">Es fehlt noch: ${open}</span></div><div class="progressbar"><i style="width:${Math.round(tot/max*100)}%"></i></div></div>`;}
   return `<div class="fin-bar fin-done"><div><b>🎉 Alles durchgespielt!</b><br><span>Deine Auswertung ist bereit. «Was tust du?» kannst du so oft spielen, wie du willst.</span></div><button class="btn primary" data-go="finish">Zur Auswertung</button></div>`;
 }
 function updateHeader(){
@@ -1152,7 +1152,8 @@ VIEWS.start=()=>{
    </div>
   </section>
   <section class="wrap pick">
-   <h2>Wie willst du spielen?</h2>
+   ${S.level?'<div class="row" style="margin-bottom:18px"><button class="btn primary" data-go="hub">▶ Weiterspielen</button></div>':''}
+   <h2>${S.level?'Niveau wechseln?':'Wie willst du spielen?'}</h2>
    <div class="pick-row">
     <button class="level-btn" data-level="1"><span class="hand">Einstieg</span><span>Einfache Sprache. Du kannst Tipps holen, ohne Punkte zu verlieren.</span></button>
     <button class="level-btn" data-level="2"><span class="hand">Profi</span><span>Mit Fachbegriffen. Du benennst die Tricks selbst, holst Extrapunkte und spielst zusätzlich «Zuordnen». Tipps und Fehlklicks kosten Punkte.</span></button>
