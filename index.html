@@ -672,11 +672,33 @@ footer .row{margin-top:8px}
 .bl-no{background:#fff;color:#555;border:1px solid #ccc;border-radius:12px;padding:10px;cursor:pointer}
 .bl-link{background:none;border:0;color:#1f6f45;text-decoration:underline;cursor:pointer;font-size:13px}
 
+.ctl{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.fsbar{display:none}
+.game.fs .phone-wrap{position:fixed;inset:0;z-index:40;background:var(--paper);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.game.fs .fsbar{display:flex;align-items:center;gap:8px;padding:6px 10px;background:var(--card);border-bottom:2px solid var(--ink);flex:0 0 auto}
+.game.fs .fsbar b{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:.95rem}
+.game.fs .fsbar span{font-size:.8rem;color:var(--ink-soft);white-space:nowrap}
+.fsb{background:var(--paper);border:2px solid var(--ink);border-radius:10px;min-width:36px;height:36px;cursor:pointer;font-size:1rem;color:var(--ink)}
+.game.fs .phone{flex:1;width:100%;max-width:520px;margin:0 auto;border:0;border-radius:0;box-shadow:none;display:flex}
+.game.fs .screen{height:auto!important;flex:1}
+body.fs-open{overflow:hidden}
 @media (max-width:820px){
   .hero{grid-template-columns:1fr}
-  .game{grid-template-columns:1fr}
-  .side{position:static}
+  .game{grid-template-columns:1fr;gap:10px}
+  .side{position:static;gap:8px}
+  .side h2{font-size:1.15rem;margin:0}
+  .side .mission{padding:8px 10px;font-size:.9rem;line-height:1.4}
+  .ctl{gap:6px}
+  .dots{gap:4px}
+  .dot{width:24px;height:24px;font-size:.75rem}
+  .ctl .row{gap:6px}
+  .ctl .btn.small{padding:.3em .55em;font-size:.85rem;box-shadow:2px 2px 0 var(--ink)}
+  .hint{display:none}
+  .crumbs{margin-bottom:4px}
+  main{padding-top:10px}
+  .phone{width:100%;border:0;border-radius:14px;box-shadow:0 0 0 2px var(--ink)}
 }
+@media (max-width:420px){.ctl .btn .lbl{display:none}.ctl .btn.small{padding:.35em .7em;font-size:1rem}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -1128,7 +1150,7 @@ const VIEWS={};
 function go(v,arg){
   if(!S.level && !['start','teach','imprint','save'].includes(v)) v='start';
   if(!VIEWS[v]) v='hub';
-  clearTimers();sheetClose=null;closeSheet();main.onclick=null;
+  clearTimers();sheetClose=null;closeSheet();main.onclick=null;document.body.classList.remove('fs-open');
   VIEWS[v](arg);
   window.scrollTo(0,0);main.focus({preventScroll:true});
   document.querySelectorAll('[data-nav]').forEach(b=>b.setAttribute('aria-current',b.dataset.go===v?'page':'false'));
@@ -1195,26 +1217,27 @@ VIEWS.spot=(arg)=>{
   const i=Number(arg), sc=SCENES[i], ids=Object.keys(sc.tricks), found=new Set();
   main.innerHTML=`<section class="wrap"><div class="crumbs"><button class="linkbtn" data-go="spot">‹ Alle Apps</button></div>
    <div class="game">
-    <div class="phone-wrap"><div class="phone"><div class="screen" id="scr">${sc.html}</div></div></div>
+    <div class="phone-wrap"><div class="fsbar"><button class="fsb" id="fsInfo" aria-label="Auftrag anzeigen">ⓘ</button><b>${sc.title}</b><span id="fsProg">0/${ids.length}</span><button class="fsb" id="fsHint" aria-label="Tipp">💡</button><button class="fsb" id="fsClose" aria-label="Vollbild verlassen">✕</button></div><div class="phone"><div class="screen" id="scr">${sc.html}</div></div></div>
     <aside class="side">
      <h2>${sc.title}</h2>
      <div class="mission">${sc.intro} <b>${sc.goal||'Finde die 4 Tricks!'}</b></div>
-     <div class="dots" id="dots">${ids.map(()=>'<span class="dot"></span>').join('')}</div>
-     <div class="row"><button class="btn small" id="hintBtn">💡 Tipp${lvl()===2?' (−3)':''}</button><button class="btn small" id="solveBtn">🔎 Auflösen</button><button class="btn small" id="againBtn">↺ Neu starten</button></div>
+     <div class="ctl"><div class="dots" id="dots">${ids.map(()=>'<span class="dot"></span>').join('')}</div>
+     <div class="row"><button class="btn small" id="hintBtn">💡 <span class="lbl">Tipp${lvl()===2?' (−3)':''}</span></button><button class="btn small" id="solveBtn">🔎 <span class="lbl">Auflösen</span></button><button class="btn small" id="againBtn">↺ <span class="lbl">Neu starten</span></button><button class="btn small" id="fsBtn">⛶ <span class="lbl">Vollbild</span></button></div></div>
      <p class="hint" id="hint"></p>
      <div id="after"></div>
     </aside>
    </div></section>`;
   const scr=$('#scr');
   sc.init&&sc.init(scr);
-  const refreshDots=()=>{document.querySelectorAll('#dots .dot').forEach((d,k)=>{const on=k<found.size;d.classList.toggle('on',on);d.textContent=on?'✓':'';});};
+  setTimeout(fitScreen,0);
+  const refreshDots=()=>{document.querySelectorAll('#dots .dot').forEach((d,k)=>{const on=k<found.size;d.classList.toggle('on',on);d.textContent=on?'✓':'';});const fp=$('#fsProg');if(fp)fp.textContent=found.size+'/'+ids.length+' gefunden';};
   S.prog=S.prog||{};
   const keep=()=>{S.prog[i]=[...found];save();};
   const finish=(quiet)=>{
     const first=!S.scenes.includes(i);
     if(first){S.scenes.push(i);save();}
     checkComplete();
-    if(!quiet)stamp($('.phone-wrap'));
+    if(!quiet){stamp($('.phone-wrap'));setTimeout(()=>{if(document.body.classList.contains('fs-open')){document.querySelector('.game').classList.remove('fs');document.body.classList.remove('fs-open');}mobileTop();fitScreen();},1400);}
     $('#hint').textContent='';
     $('#after').innerHTML=`<div class="mission"><b>Alle verdächtigen Stellen gefunden!</b> ${first?'':'(Wiederholung)'}</div>
      <div class="row">${i<SCENES.length-1?`<button class="btn primary" data-go="spot" data-arg="${i+1}">Nächste App</button>`:`<button class="btn primary" data-go="escape">Weiter zu «Entkommen»</button>`}<button class="btn" data-replay="${i}">↺ Nochmals spielen</button></div>`;
@@ -1266,8 +1289,11 @@ VIEWS.spot=(arg)=>{
     const next=ids.find(x=>!found.has(x));if(!next)return;
     if(lvl()===2){if(S.points<3){toast('Zu wenig Punkte für einen Tipp');return;}addPoints(-3,'Tipp in «'+sc.title+'»','hint');}
     $('#hint').textContent=sc.hints[next];
+    if(mobileMQ.matches)openSheet(`<div class="verdict" style="color:var(--blue)">💡 Tipp</div><p id="sheetTitle" style="margin:0">${sc.hints[next]}</p>${closeRow}`,onClose);
   };
   $('#againBtn').onclick=()=>replayScene(i);
+  wireFS(`<h3 id="sheetTitle">${sc.title}</h3><p style="margin:0">${sc.intro} <b>${sc.goal||'Finde die 4 Tricks!'}</b></p>`);
+  $('#fsHint').onclick=()=>$('#hintBtn').click();
   (S.prog[i]||[]).forEach(id=>{const el=scr.querySelector(`[data-hs="${id}"]`);if(!el||!sc.tricks[id])return;found.add(id);el.classList.add('caught');el.dataset.tag=tagOf(pidsOf(sc,id));sc.onTap&&sc.onTap(id,scr);});
   refreshDots();
   const showSolved=(all,txt)=>{
@@ -1281,10 +1307,28 @@ VIEWS.spot=(arg)=>{
     left.forEach(id=>{const el=scr.querySelector(`[data-hs="${id}"]`),ps=pidsOf(sc,id);found.add(id);el.classList.add('caught');el.dataset.tag=tagOf(ps);ps.forEach(p=>{discover(p.id);mark(p.id,'unsure');all.push(p);});});
     refreshDots();S.auf[i]=true;keep();$('#hint').textContent='';
     showSolved(all,'Diese Tricks hast du nicht gefunden (dafür gibt es keine Punkte):');
+    setFS(false);try{sessionStorage.setItem('ds-fs','1');}catch(e){}mobileTop();setTimeout(fitScreen,50);
   };
 };
 function replayScene(i){if(S.prog)delete S.prog[i];if(S.auf)delete S.auf[i];save();go('spot',i);}
 document.addEventListener('click',e=>{const r=e.target.closest('[data-replay]');if(r)replayScene(Number(r.dataset.replay));});
+const mobileMQ=window.matchMedia?window.matchMedia('(max-width:820px)'):{matches:false};
+function fitScreen(){
+  const scr=document.getElementById('scr');if(!scr)return;
+  if(!mobileMQ.matches||document.body.classList.contains('fs-open')){scr.style.height='';return;}
+  const top=scr.getBoundingClientRect().top+window.scrollY;
+  scr.style.height=Math.max(340,Math.round(window.innerHeight-top-10))+'px';
+}
+window.addEventListener('resize',()=>fitScreen());
+function mobileTop(){if(mobileMQ.matches)window.scrollTo({top:0,behavior:'smooth'});}
+function setFS(on){const g=document.querySelector('.game');if(!g)return;try{sessionStorage.setItem('ds-fs',on?'1':'0');}catch(e){}g.classList.toggle('fs',on);document.body.classList.toggle('fs-open',on);fitScreen();}
+function wireFS(info){
+  $('#fsBtn').onclick=()=>setFS(true);
+  $('#fsClose').onclick=()=>setFS(false);
+  $('#fsInfo').onclick=()=>openSheet(info+'<div class="row"><button class="btn" data-close>Weiter</button></div>',e=>{if(e.target.closest('[data-close]'))closeSheet();});
+  let pref=false;try{pref=sessionStorage.getItem('ds-fs')==='1';}catch(e){}
+  if(pref)setTimeout(()=>{const a=$('#after');if(a&&!a.innerHTML.trim())setFS(true);},0);
+}
 function stamp(wrap,txt='Durchschaut!'){const d=document.createElement('div');d.className='stamp';d.innerHTML=`<span>${txt}</span>`;wrap.appendChild(d);setTimeout(()=>d.remove(),2600);}
 
 /* ============ Entkommen ============ */
@@ -1548,21 +1592,22 @@ VIEWS.escape=(arg)=>{
   const keepE=()=>{S.escSt[m.id]={st,over};save();};
   main.innerHTML=`<section class="wrap"><div class="crumbs"><button class="linkbtn" data-go="escape">‹ Alle Missionen</button></div>
    <div class="game">
-    <div class="phone-wrap"><div class="phone"><div class="screen" id="scr"></div></div></div>
+    <div class="phone-wrap"><div class="fsbar"><button class="fsb" id="fsInfo" aria-label="Ziel anzeigen">ⓘ</button><b>${m.title}</b><span id="fsProg">Klicks: 0</span><button class="fsb" id="fsClose" aria-label="Vollbild verlassen">✕</button></div><div class="phone"><div class="screen" id="scr"></div></div></div>
     <aside class="side">
      <h2>Mission: ${m.title}</h2>
      <div class="mission">${m.goal}</div>
-     <p class="muted" style="margin:0">Klicks: <b id="clicks">0</b></p>
-     <div class="row"><button class="btn small" id="restart">↺ Neu starten</button></div>
+     <div class="ctl"><p class="muted" style="margin:0">Klicks: <b id="clicks">0</b></p>
+     <div class="row"><button class="btn small" id="restart">↺ <span class="lbl">Neu starten</span></button><button class="btn small" id="fsBtn">⛶ <span class="lbl">Vollbild</span></button></div></div>
      <div id="after"></div>
     </aside>
    </div></section>`;
   const scr=$('#scr');
   let autoT=null;
-  const draw=()=>{scr.innerHTML=m.render(st);$('#clicks').textContent=st.clicks;keepE();
+  const draw=()=>{scr.innerHTML=m.render(st);$('#clicks').textContent=st.clicks;const fp=$('#fsProg');if(fp)fp.textContent='Klicks: '+st.clicks;keepE();
     clearTimeout(autoT);const au=!over&&m.auto&&m.auto(st);if(au){autoT=setTimeout(()=>handle(au.act,false),au.ms);timers.push(autoT);}};
   const restart=()=>{st=Object.assign(m.init(),{clicks:0});over=false;$('#after').innerHTML='';draw();};
   $('#restart').onclick=restart;
+  wireFS(`<h3 id="sheetTitle">${m.title}</h3><p style="margin:0">${m.goal}</p>`);
   const showDone=()=>{
       $('#after').innerHTML=`<div class="mission">${m.doneText(st)}</div>
        <p style="margin:4px 0 0"><b>Diese Tricks haben dich aufgehalten:</b></p>
@@ -1573,6 +1618,7 @@ VIEWS.escape=(arg)=>{
   };
   draw();
   if(over)showDone();
+  setTimeout(fitScreen,0);
   scr.onclick=e=>{
     if(over)return;
     const b=e.target.closest('[data-act]');if(!b||b.disabled)return;
@@ -1596,6 +1642,7 @@ VIEWS.escape=(arg)=>{
       m.patterns.forEach(id=>{discover(id);mark(id,'seen');});
       stamp($('.phone-wrap'),'Geschafft!');
       showDone();
+      setTimeout(()=>{if(document.body.classList.contains('fs-open')){document.querySelector('.game').classList.remove('fs');document.body.classList.remove('fs-open');}mobileTop();fitScreen();},1400);
       checkComplete();
       checkBadges();
       return;
